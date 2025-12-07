@@ -1,0 +1,151 @@
+/* Global */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding-top: 80px;
+    text-align: center;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #03045e;
+    padding: 12px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    display: inline;
+    margin: 0 18px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
+    color: #90e0ef;
+}
+
+/* Header */
+header {
+    background-color: #0077b6;
+    color: white;
+    padding: 50px 0;
+}
+
+/* Sections */
+section {
+    padding: 50px;
+    background: white;
+    margin: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 0px 12px rgba(0,0,0,0.12);
+}
+
+/* Headings */
+h2 {
+    color: #0077b6;
+    font-size: 30px;
+    margin-bottom: 25px;
+}
+
+/* Text */
+section p, section li {
+    font-size: 18px;
+    color: #353535;
+    line-height: 1.6;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* Project Section */
+.projects-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.project-card {
+    background: #ffffff;
+    width: 280px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.15);
+}
+
+.project-card h3 {
+    color: #03045e;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0077b6;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #023e8a;
+}
+
+/* Contact Form */
+.contact-form {
+    width: 85%;
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Footer */
+footer {
+    background-color: #023e8a;
+    color: white;
+    padding: 15px 0;
+    margin-top: 50px;
+}
+
+/* Responsive Design */
+@media(max-width: 768px) {
+    section {
+        margin: 20px;
+        padding: 35px;
+    }
+}
+
+@media(max-width: 480px) {
+    .nav-links li {
+        display: block;
+        margin: 10px 0;
+    }
+}
