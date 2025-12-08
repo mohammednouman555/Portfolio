@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
-    padding-top: 80px;
+    padding-top: 80px; /* space for sticky navbar */
     text-align: center;
 }
 
@@ -62,7 +62,8 @@ h2 {
 }
 
 /* Text */
-section p, section li {
+section p,
+section li {
     font-size: 18px;
     color: #353535;
     line-height: 1.6;
@@ -73,7 +74,7 @@ ul {
     padding: 0;
 }
 
-/* Project Section */
+/* Projects section */
 .projects-container {
     display: flex;
     justify-content: center;
@@ -92,6 +93,10 @@ ul {
 .project-card h3 {
     color: #03045e;
     margin-bottom: 10px;
+}
+
+.project-card p {
+    margin-bottom: 20px;
 }
 
 /* Buttons */
@@ -136,14 +141,18 @@ footer {
 }
 
 /* Responsive Design */
-@media(max-width: 768px) {
+@media (max-width: 768px) {
     section {
         margin: 20px;
         padding: 35px;
     }
+
+    h2 {
+        font-size: 26px;
+    }
 }
 
-@media(max-width: 480px) {
+@media (max-width: 480px) {
     .nav-links li {
         display: block;
         margin: 10px 0;
