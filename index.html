@@ -92,13 +92,17 @@
     <!-- Contact Section -->
     <section id="contact">
         <h2>Contact Me</h2>
-        <form class="contact-form">
-            <input type="text" placeholder="Your Name" required>
-            <input type="email" placeholder="Your Email" required>
-            <textarea placeholder="Your Message" rows="5" required></textarea>
+
+        <form class="contact-form" id="contactForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
             <button type="submit" class="btn">Send Message</button>
         </form>
+
+        <p id="responseMsg" style="font-weight:bold; color:green; margin-top:10px;"></p>
     </section>
+
 
     <!-- Footer -->
     <footer>
@@ -107,3 +111,4 @@
 
 </body>
 </html>
+
