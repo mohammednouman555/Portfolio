@@ -18,6 +18,7 @@ fetch("https://portfolio-backend-rgbj.onrender.com/admin/messages", {
 })
 .then(data => {
     const container = document.getElementById("messages");
+    container.innerHTML = "";
 
     if (data.length === 0) {
         container.innerHTML = "<p>No messages found.</p>";
@@ -36,7 +37,12 @@ fetch("https://portfolio-backend-rgbj.onrender.com/admin/messages", {
     });
 })
 .catch(() => {
-    alert("Invalid API key");
+    alert("Invalid or expired API key");
     localStorage.removeItem("ADMIN_API_KEY");
     window.location.href = "admin.html";
 });
+
+function logout() {
+    localStorage.removeItem("ADMIN_API_KEY");
+    window.location.href = "admin.html";
+}
