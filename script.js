@@ -1,21 +1,37 @@
-const form = document.getElementById("contactForm");
-
-form.addEventListener("submit", async (e) => {
+document.getElementById("contactForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const userData = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        message: document.getElementById("message").value
-    };
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+    const responseMsg = document.getElementById("responseMsg");
 
-    const res = await fetch("https://portfolio-backend-rgbj.onrender.com/contact", {
+    try {
+        const response = await fetch("https://portfolio-backend-rgbj.onrender.com/contact", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                message: message
+            })
+        });
 
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-    });
+        const result = await response.json();
 
-    const result = await res.json();
-    document.getElementById("responseMsg").innerText = result.message;
+        if (response.ok) {
+            responseMsg.style.color = "green";
+            responseMsg.innerText = "Message sent successfully!";
+            document.getElementById("contactForm").reset();
+        } else {
+            responseMsg.style.color = "red";
+            responseMsg.innerText = "Failed to send message.";
+        }
+
+    } catch (error) {
+        responseMsg.style.color = "red";
+        responseMsg.innerText = "Server error. Try again later.";
+    }
 });
