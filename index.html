@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nouman's Portfolio</title>
 
-    <!-- SEO -->
     <meta name="description" content="Mohammed Nouman — Computer Science Engineering student, Python & Web Development enthusiast.">
     <meta name="author" content="Mohammed Nouman">
 
-    <!-- Favicon -->
     <link rel="icon" href="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f4bb.svg">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -21,11 +17,10 @@
 </head>
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- NAVBAR (NON-STICKY, MOBILE SAFE) -->
 <nav class="navbar">
     <div class="nav-container">
         <span class="brand">Nouman</span>
-
         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
         <ul class="nav-links" id="navMenu">
@@ -38,23 +33,17 @@
     </div>
 </nav>
 
-<!-- ================= HEADER ================= -->
 <header id="home">
     <h1>Mohammed Nouman</h1>
     <p>Computer Science Engineering Student</p>
     <p>Python & Web Development Enthusiast</p>
 </header>
 
-<!-- ================= ABOUT ================= -->
 <section id="about">
     <h2>About Me</h2>
-    <p>
-        I am a Computer Science Engineering student learning full-stack development,
-        Python automation, and building practical projects that solve real problems.
-    </p>
+    <p>I am a Computer Science Engineering student learning full-stack development and building practical projects.</p>
 </section>
 
-<!-- ================= SKILLS ================= -->
 <section id="skills">
     <h2>My Skills</h2>
     <ul>
@@ -67,45 +56,37 @@
     </ul>
 </section>
 
-<!-- ================= PROJECTS ================= -->
 <section id="projects">
     <h2>Projects</h2>
-
     <div class="projects-container">
         <div class="project-card">
             <h3>File Organizer Tool</h3>
             <p>Python automation tool that categorizes files automatically.</p>
-            <a href="https://github.com/mohammednouman555/Organized_Files" target="_blank" class="btn">View Project</a>
+            <a class="btn" href="https://github.com/mohammednouman555/Organized_Files" target="_blank">View Project</a>
         </div>
 
         <div class="project-card">
             <h3>Portfolio Website</h3>
-            <p>Personal web portfolio showcasing skills and projects.</p>
-            <a href="https://mohammednouman555.github.io/Portfolio/" target="_blank" class="btn">View Live</a>
+            <p>Personal web portfolio.</p>
+            <a class="btn" href="https://mohammednouman555.github.io/Portfolio/" target="_blank">View Live</a>
         </div>
     </div>
 </section>
 
-<!-- ================= CONTACT ================= -->
 <section id="contact">
     <h2>Contact Me</h2>
-
-    <form class="contact-form" id="contactForm">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="email" id="email" placeholder="Your Email" required>
-        <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
-        <button type="submit" class="btn">Send Message</button>
+    <form class="contact-form">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea rows="5" placeholder="Your Message" required></textarea>
+        <button class="btn" type="submit">Send Message</button>
     </form>
-
-    <p id="responseMsg"></p>
 </section>
 
-<!-- ================= FOOTER ================= -->
 <footer>
     <p>© 2025 Mohammed Nouman | All Rights Reserved</p>
 </footer>
 
-<!-- ================= SCRIPT ================= -->
 <script>
 function toggleMenu() {
     document.getElementById("navMenu").classList.toggle("active");

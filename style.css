@@ -1,4 +1,4 @@
-/* ================= GLOBAL ================= */
+/* GLOBAL */
 * {
     box-sizing: border-box;
 }
@@ -6,29 +6,20 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background: #f4f4f4;
     text-align: center;
 }
 
-/* ================= NAVBAR ================= */
+/* NAVBAR (NOT FIXED / NOT STICKY) */
 .navbar {
-    background-color: #03045e;
+    background: #03045e;
     width: 100%;
-}
-
-/* Sticky ONLY on desktop */
-@media (min-width: 769px) {
-    .navbar {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
 }
 
 .nav-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 12px 20px;
 }
 
@@ -38,7 +29,6 @@ body {
     font-weight: bold;
 }
 
-/* Desktop Menu */
 .nav-links {
     list-style: none;
     display: flex;
@@ -53,50 +43,34 @@ body {
     font-weight: bold;
 }
 
-.nav-links a:hover {
-    color: #90e0ef;
-}
-
-/* Hamburger Button */
 .menu-toggle {
     display: none;
-    font-size: 24px;
     background: none;
     border: none;
     color: white;
-    cursor: pointer;
+    font-size: 24px;
 }
 
-/* ================= HEADER ================= */
+/* HEADER */
 header {
-    background-color: #0077b6;
+    background: #0077b6;
     color: white;
     padding: 60px 20px;
 }
 
-/* ================= SECTIONS ================= */
+/* SECTIONS */
 section {
-    padding: 50px;
     background: white;
     margin: 30px auto;
-    border-radius: 12px;
+    padding: 50px;
     max-width: 1100px;
-    box-shadow: 0px 0px 12px rgba(0,0,0,0.12);
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.12);
 }
 
-/* ================= HEADINGS ================= */
+/* TEXT */
 h2 {
     color: #0077b6;
-    font-size: 30px;
-    margin-bottom: 25px;
-}
-
-/* ================= TEXT ================= */
-section p,
-section li {
-    font-size: 18px;
-    color: #353535;
-    line-height: 1.6;
 }
 
 ul {
@@ -104,40 +78,43 @@ ul {
     padding: 0;
 }
 
-/* ================= PROJECTS ================= */
+section p, li {
+    font-size: 18px;
+}
+
+/* PROJECTS */
 .projects-container {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
     gap: 25px;
+    flex-wrap: wrap;
 }
 
 .project-card {
-    background: #ffffff;
     width: 280px;
     padding: 20px;
+    background: #fff;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
 
-/* ================= BUTTONS ================= */
+/* BUTTON */
 .btn {
     display: inline-block;
     padding: 10px 22px;
-    background-color: #0077b6;
+    background: #0077b6;
     color: white;
-    border-radius: 5px;
     text-decoration: none;
+    border-radius: 5px;
     font-weight: bold;
 }
 
 .btn:hover {
-    background-color: #023e8a;
+    background: #023e8a;
 }
 
-/* ================= CONTACT FORM ================= */
+/* CONTACT FORM */
 .contact-form {
-    width: 90%;
     max-width: 500px;
     margin: auto;
     display: flex;
@@ -148,55 +125,38 @@ ul {
 .contact-form input,
 .contact-form textarea {
     padding: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
-/* ================= FOOTER ================= */
+/* FOOTER */
 footer {
-    background-color: #023e8a;
+    background: #023e8a;
     color: white;
-    padding: 15px 0;
-    margin-top: 50px;
+    padding: 15px;
+    margin-top: 40px;
 }
 
-/* ================= MOBILE ================= */
+/* MOBILE */
 @media (max-width: 768px) {
-
     .menu-toggle {
         display: block;
     }
 
-    /* KEY FIX: no fixed/sticky, no space usage */
     .nav-links {
-        position: static;
-        width: 100%;
-        background-color: #03045e;
-        flex-direction: column;
         display: none;
+        flex-direction: column;
+        background: #03045e;
+        width: 100%;
     }
 
     .nav-links.active {
         display: flex;
     }
 
-    .nav-links li {
-        padding: 14px 0;
-    }
-
     section {
-        padding: 35px 20px;
         margin: 20px;
-    }
-
-    h2 {
-        font-size: 26px;
-    }
-}
-
-@media (max-width: 480px) {
-    header {
-        padding: 50px 15px;
+        padding: 35px 20px;
     }
 }
