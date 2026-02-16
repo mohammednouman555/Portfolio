@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #03045e;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #03045e;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0077b6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #023e8a;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+
+    <h2>Admin Login</h2>
+
+    <input type="password" id="apiKey" placeholder="Enter Admin API Key">
+
+    <button onclick="login()">Login</button>
+
+    <p class="error" id="errorMsg"></p>
+
+</div>
+
+<script>
+function login() {
+
+    const key = document.getElementById("apiKey").value.trim();
+    const error = document.getElementById("errorMsg");
+
+    if (!key) {
+        error.innerText = "API Key required";
+        return;
+    }
+
+    // Save key
+    localStorage.setItem("ADMIN_API_KEY", key);
+
+    // Test key
+    fetch("https://portfolio-backend-rgbj.onrender.com/admin/messages", {
+        headers: {
+            "x-api-key": key
+        }
+    })
+    .then(res => {
+
+        if (res.ok) {
+            window.location.href = "messages.html";
+        }
+        else {
+            localStorage.removeItem("ADMIN_API_KEY");
+            error.innerText = "Invalid API Key";
+        }
+
+    })
+    .catch(() => {
+        error.innerText = "Server error";
+    });
+
+}
+</script>
+
+</body>
+</html>
