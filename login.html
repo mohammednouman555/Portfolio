@@ -69,41 +69,44 @@
 
     <input type="password" id="apiKey" placeholder="Enter Admin API Key">
 
-    <button onclick="login()">Login</button>
+    <button id="loginBtn">Login</button>
 
     <p class="error" id="errorMsg"></p>
 
 </div>
 
 <script>
+
+document.getElementById("loginBtn").addEventListener("click", login);
+
 function login() {
 
     const key = document.getElementById("apiKey").value.trim();
     const error = document.getElementById("errorMsg");
+
+    error.innerText = "";
 
     if (!key) {
         error.innerText = "API Key required";
         return;
     }
 
-    fetch("https://portfolio-backend-rgbj.onrender.com/admin/login", {
-        method: "POST",
+    console.log("Sending key..."); // Debug
+
+    fetch("https://portfolio-backend-rgbj.onrender.com/admin/messages", {
+        method: "GET",
         headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            api_key: key
-        })
+            "x-api-key": key
+        }
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => {
 
-        if (data.token) {
+        console.log("Response status:", res.status); // Debug
 
-            // Save token
-            localStorage.setItem("ADMIN_TOKEN", data.token);
+        if (res.ok) {
 
-            // Redirect
+            localStorage.setItem("ADMIN_API_KEY", key);
+
             window.location.href = "dashboard.html";
 
         } else {
@@ -113,11 +116,16 @@ function login() {
         }
 
     })
-    .catch(() => {
+    .catch(err => {
+
+        console.error(err);
+
         error.innerText = "Server error";
+
     });
 
 }
+
 </script>
 
 </body>
