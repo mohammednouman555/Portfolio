@@ -52,7 +52,7 @@ function markRead(id) {
     fetch(`https://portfolio-backend-rgbj.onrender.com/admin/messages/${id}/read`, {
         method: "PUT",
         headers: {
-            "x-api-key": apiKey
+            "Authorization": "Bearer " + localStorage.getItem("ADMIN_TOKEN")
         }
     })
     .then(res => {

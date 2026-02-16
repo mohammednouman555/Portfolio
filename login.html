@@ -86,23 +86,30 @@ function login() {
         return;
     }
 
-    // Save key
-    localStorage.setItem("ADMIN_API_KEY", key);
-
-    // Test key
-    fetch("https://portfolio-backend-rgbj.onrender.com/admin/messages", {
+    fetch("https://portfolio-backend-rgbj.onrender.com/admin/login", {
+        method: "POST",
         headers: {
-            "x-api-key": key
-        }
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            api_key: key
+        })
     })
-    .then(res => {
+    .then(res => res.json())
+    .then(data => {
 
-        if (res.ok) {
-            window.location.href = "messages.html";
-        }
-        else {
-            localStorage.removeItem("ADMIN_API_KEY");
+        if (data.token) {
+
+            // Save token
+            localStorage.setItem("ADMIN_TOKEN", data.token);
+
+            // Redirect
+            window.location.href = "dashboard.html";
+
+        } else {
+
             error.innerText = "Invalid API Key";
+
         }
 
     })
