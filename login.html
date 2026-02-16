@@ -98,7 +98,7 @@ function login() {
     .then(res => {
 
         if (res.ok) {
-            window.location.href = "admin/messages.html";
+            window.location.href = "messages.html";
         }
         else {
             localStorage.removeItem("ADMIN_API_KEY");
