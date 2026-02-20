@@ -1,118 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 20px;
-            margin: 0;
-        }
+<link rel="stylesheet" href="style.css">
 
-        h2 {
-            text-align: center;
-            color: #03045e;
-        }
+<style>
 
-        .logout {
-            float: right;
-            background: #d00000;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+.dashboard {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px;
+}
 
-        .logout:hover {
-            background: #9b0000;
-        }
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .message {
-            background: white;
-            padding: 15px;
-            margin: 15px auto;
-            max-width: 700px;
-            border-radius: 8px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.15);
-        }
+.message-card {
+    background: white;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+}
 
-        .message strong {
-            color: #0077b6;
-        }
-    </style>
+.message-card button {
+    margin-right: 10px;
+    padding: 6px 12px;
+}
+
+</style>
+
 </head>
 <body>
 
-<button class="logout" onclick="logout()">Logout</button>
+<div class="dashboard">
 
-<h2>Admin Dashboard</h2>
+    <div class="top-bar">
 
-<div id="messages"></div>
+        <h2>Admin Dashboard</h2>
 
-<script>
+        <button onclick="logout()">Logout</button>
 
-const API_URL = "https://portfolio-backend-rgbj.onrender.com/admin/messages";
+    </div>
 
-const key = localStorage.getItem("ADMIN_API_KEY");
+    <hr>
 
-if (!key) {
-    window.location.href = "login.html";
-}
+    <div id="messages"></div>
 
-function logout() {
-    localStorage.removeItem("ADMIN_API_KEY");
-    window.location.href = "login.html";
-}
+</div>
 
-fetch(API_URL, {
-    headers: {
-        "x-api-key": key
-    }
-})
-.then(res => {
-
-    if (!res.ok) {
-        throw new Error("Unauthorized");
-    }
-
-    return res.json();
-})
-.then(data => {
-
-    const container = document.getElementById("messages");
-
-    if (data.length === 0) {
-        container.innerHTML = "<p>No messages yet.</p>";
-        return;
-    }
-
-    data.forEach(msg => {
-
-        const div = document.createElement("div");
-        div.className = "message";
-
-        div.innerHTML = `
-            <p><strong>Name:</strong> ${msg.name}</p>
-            <p><strong>Email:</strong> ${msg.email}</p>
-            <p><strong>Message:</strong> ${msg.message}</p>
-            <p><small>${msg.created_at}</small></p>
-        `;
-
-        container.appendChild(div);
-    });
-
-})
-.catch(() => {
-    alert("Session expired. Login again.");
-    logout();
-});
-
-</script>
+<script src="admin.js"></script>
 
 </body>
 </html>
