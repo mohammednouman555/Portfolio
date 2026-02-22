@@ -3,12 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
 <style>
+
+body {
+    background: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
 
 .dashboard {
     max-width: 900px;
@@ -20,6 +24,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .message-card {
@@ -40,35 +46,49 @@
     opacity: 0.6;
 }
 
-</style>
+#pagination button {
+    margin: 5px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
 
+.search-box input {
+    padding: 6px;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="dashboard">
 
     <div class="top-bar">
-
         <h2>Admin Dashboard</h2>
 
-        <button onclick="logout()">Logout</button>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search name or email">
+            <button onclick="handleSearch()">Search</button>
+        </div>
 
+        <button onclick="logout()">Logout</button>
     </div>
 
     <hr>
 
     <div id="messages">Loading...</div>
+    <div id="pagination"></div>
 
 </div>
-
 
 <script>
 
 const API_URL = "https://portfolio-backend-rgbj.onrender.com";
-
-// ================= AUTH CHECK =================
-
 const token = localStorage.getItem("ADMIN_TOKEN");
+
+let currentPage = 1;
+let currentSearch = "";
+const limit = 5;
 
 if (!token) {
     window.location.href = "login.html";
@@ -77,17 +97,22 @@ if (!token) {
 
 // ================= LOAD MESSAGES =================
 
-async function loadMessages() {
+async function loadMessages(page = 1, search = "") {
+
+    currentPage = page;
+    currentSearch = search;
 
     try {
 
-        const res = await fetch(API_URL + "/admin/messages", {
-            headers: {
-                "Authorization": "Bearer " + token
+        const res = await fetch(
+            `${API_URL}/admin/messages?page=${page}&limit=${limit}&search=${search}`,
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
             }
-        });
+        );
 
-        // Token expired / invalid
         if (res.status === 401) {
             logout();
             return;
@@ -95,38 +120,34 @@ async function loadMessages() {
 
         const data = await res.json();
 
-        renderMessages(data);
+        renderMessages(data.messages);
+        renderPagination(data.total);
 
-    } catch (err) {
-
+    } catch {
         document.getElementById("messages").innerText =
             "Server error. Try again later.";
-
     }
-
 }
 
+
+// ================= RENDER MESSAGES =================
 
 function renderMessages(messages) {
 
     const box = document.getElementById("messages");
-
     box.innerHTML = "";
 
     if (messages.length === 0) {
-        box.innerText = "No messages yet.";
+        box.innerText = "No messages found.";
         return;
     }
 
     messages.forEach(msg => {
 
         const div = document.createElement("div");
-
         div.className = "message-card";
 
-        if (msg.is_read) {
-            div.classList.add("read");
-        }
+        if (msg.is_read) div.classList.add("read");
 
         div.innerHTML = `
             <p><strong>Name:</strong> ${msg.name}</p>
@@ -144,9 +165,32 @@ function renderMessages(messages) {
         `;
 
         box.appendChild(div);
-
     });
+}
 
+
+// ================= PAGINATION =================
+
+function renderPagination(total) {
+
+    const totalPages = Math.ceil(total / limit);
+    const pagination = document.getElementById("pagination");
+
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        const btn = document.createElement("button");
+        btn.innerText = i;
+
+        if (i === currentPage) {
+            btn.disabled = true;
+        }
+
+        btn.onclick = () => loadMessages(i, currentSearch);
+
+        pagination.appendChild(btn);
+    }
 }
 
 
@@ -154,29 +198,17 @@ function renderMessages(messages) {
 
 async function toggleRead(id) {
 
-    try {
-
-        const res = await fetch(
-            API_URL + `/admin/messages/${id}/toggle-read`,
-            {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+    await fetch(
+        `${API_URL}/admin/messages/${id}/toggle-read`,
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token
             }
-        );
-
-        if (res.status === 401) {
-            logout();
-            return;
         }
+    );
 
-        loadMessages();
-
-    } catch {
-        alert("Failed to update message");
-    }
-
+    loadMessages(currentPage, currentSearch);
 }
 
 
@@ -186,40 +218,33 @@ async function deleteMessage(id) {
 
     if (!confirm("Delete this message?")) return;
 
-    try {
-
-        const res = await fetch(
-            API_URL + `/admin/messages/${id}`,
-            {
-                method: "DELETE",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+    await fetch(
+        `${API_URL}/admin/messages/${id}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
             }
-        );
-
-        if (res.status === 401) {
-            logout();
-            return;
         }
+    );
 
-        loadMessages();
+    loadMessages(currentPage, currentSearch);
+}
 
-    } catch {
-        alert("Delete failed");
-    }
 
+// ================= SEARCH =================
+
+function handleSearch() {
+    const value = document.getElementById("searchInput").value;
+    loadMessages(1, value);
 }
 
 
 // ================= LOGOUT =================
 
 function logout() {
-
     localStorage.removeItem("ADMIN_TOKEN");
-
     window.location.href = "login.html";
-
 }
 
 
