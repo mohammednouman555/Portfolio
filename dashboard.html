@@ -15,6 +15,7 @@
 
         body {
             background: #f4f6f9;
+            font-family: Arial, sans-serif;
         }
 
         .dashboard {
@@ -30,7 +31,7 @@
             margin-bottom: 25px;
         }
 
-        /* ================== STATS ================== */
+        /* ================= STATS ================= */
 
         .stats {
             display: grid;
@@ -59,7 +60,7 @@
             margin-top: 8px;
         }
 
-        /* ================== CHART ================== */
+        /* ================= CHART ================= */
 
         .chart-box {
             background: white;
@@ -69,7 +70,7 @@
             margin-bottom: 30px;
         }
 
-        /* ================== MESSAGES ================== */
+        /* ================= MESSAGES ================= */
 
         .message-card {
             background: white;
@@ -136,9 +137,7 @@
     <!-- ================= CHART ================= -->
 
     <div class="chart-box">
-
         <canvas id="messageChart" height="120"></canvas>
-
     </div>
 
 
@@ -176,9 +175,22 @@
     }
 
 
+    /* ================= TIME FORMAT ================= */
+
+    function formatIST(dateString) {
+
+        if (!dateString) return "--";
+
+        return new Date(dateString + "Z").toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata"
+        });
+
+    }
+
+
     /* ================= STATS ================= */
 
-    let chart;
+    let chart = null;
 
     async function loadStats() {
 
@@ -207,9 +219,7 @@
                 data.unread_messages;
 
             document.getElementById("lastTime").innerText =
-                data.last_message_time
-                    ? new Date(data.last_message_time).toLocaleString()
-                    : "--";
+                formatIST(data.last_message_time);
 
             renderChart(
                 data.read_messages,
@@ -325,7 +335,7 @@
                 <p><strong>Message:</strong> ${msg.message}</p>
 
                 <p><small>
-                    ${new Date(msg.created_at).toLocaleString()}
+                    ${formatIST(msg.created_at)}
                 </small></p>
 
                 <button onclick="toggleRead(${msg.id})">
@@ -415,6 +425,16 @@
         }
 
     }
+
+
+    /* ================= AUTO REFRESH ================= */
+
+    setInterval(() => {
+
+        loadStats();
+        loadMessages();
+
+    }, 30000); // every 30 seconds
 
 
     /* ================= INIT ================= */
