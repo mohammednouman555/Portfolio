@@ -181,10 +181,13 @@
 
         if (!dateString) return "--";
 
-        return new Date(dateString + "Z").toLocaleString("en-IN", {
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) return "--";
+
+        return date.toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata"
         });
-
     }
 
 
@@ -278,7 +281,7 @@
 
         try {
 
-            const res = await fetch(API_URL + "/admin/messages", {
+            const res = await fetch(API_URL + "/admin/messages?limit=20", {
                 headers: {
                     "Authorization": "Bearer " + token
                 }
