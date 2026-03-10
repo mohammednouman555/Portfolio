@@ -183,8 +183,6 @@
 
         const date = new Date(dateString);
 
-        if (isNaN(date.getTime())) return "--";
-
         return date.toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata"
         });
