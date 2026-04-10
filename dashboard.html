@@ -9,45 +9,99 @@
 
 <style>
 
-body {
-    font-family: Arial;
-    background: #f4f6f9;
+/* ===== BODY ===== */
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#f4f6f9;
 }
 
-.dashboard {
-    max-width: 1100px;
-    margin: auto;
-    padding: 20px;
+/* ===== CONTAINER ===== */
+.dashboard{
+    max-width:1100px;
+    margin:auto;
+    padding:25px;
 }
 
-.top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+/* ===== TOP BAR ===== */
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
 }
 
-input {
-    padding: 8px;
-    width: 200px;
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    background:#0077b6;
+    color:white;
+    cursor:pointer;
 }
 
-button {
-    padding: 8px 12px;
-    background: #0077b6;
-    color: white;
-    border: none;
-    border-radius: 5px;
+button:hover{
+    background:#023e8a;
 }
 
-.card {
-    background: white;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
+/* ===== SEARCH ===== */
+.search-box{
+    margin-bottom:15px;
+    display:flex;
+    gap:10px;
 }
 
-.pagination {
-    margin-top: 20px;
+.search-box input{
+    flex:1;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+/* ===== STATS ===== */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.stat-box{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ===== CHART ===== */
+.chart-box{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+/* ===== MESSAGE CARD ===== */
+.message-card{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.message-card button{
+    margin-top:8px;
+    margin-right:8px;
+}
+
+/* ===== PAGINATION ===== */
+.pagination{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:20px;
 }
 
 </style>
@@ -57,109 +111,152 @@ button {
 
 <div class="dashboard">
 
-<div class="top">
-    <h2>Admin Dashboard</h2>
-    <button onclick="logout()">Logout</button>
-</div>
+    <div class="top-bar">
+        <h2>Admin Dashboard</h2>
+        <button onclick="logout()">Logout</button>
+    </div>
 
-<div style="display:flex; gap:10px;">
-    <input id="search" placeholder="Search name/email">
-    <button onclick="loadMessages()">Search</button>
-    <button onclick="exportCSV()">Export CSV</button>
-</div>
+    <!-- SEARCH -->
+    <div class="search-box">
+        <input id="searchInput" placeholder="Search name or email">
+        <button onclick="loadMessages()">Search</button>
+    </div>
 
-<p>
-Total: <span id="total">0</span> |
-Read: <span id="read">0</span> |
-Unread: <span id="unread">0</span>
-</p>
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-box">Total<br><b id="total">0</b></div>
+        <div class="stat-box">Read<br><b id="read">0</b></div>
+        <div class="stat-box">Unread<br><b id="unread">0</b></div>
+        <div class="stat-box">Last<br><b id="last">--</b></div>
+    </div>
 
-<hr>
+    <!-- CHART -->
+    <div class="chart-box">
+        <canvas id="chart"></canvas>
+    </div>
 
-<div id="messages">Loading...</div>
+    <!-- MESSAGES -->
+    <div id="messages">Loading...</div>
 
-<div class="pagination">
-    <button onclick="prev()">Prev</button>
-    <span id="page">1</span>
-    <button onclick="next()">Next</button>
-</div>
+    <!-- PAGINATION -->
+    <div class="pagination">
+        <button onclick="prevPage()">Prev</button>
+        <span id="pageNum">1</span>
+        <button onclick="nextPage()">Next</button>
+    </div>
 
 </div>
 
 <script>
 
-const API = "https://portfolio-backend-rgbj.onrender.com";
-const token = localStorage.getItem("ADMIN_TOKEN");
+/* ===== CONFIG ===== */
+const API="https://portfolio-backend-rgbj.onrender.com";
+const token=localStorage.getItem("ADMIN_TOKEN");
 
 if(!token) location.href="login.html";
 
-let page = 1;
-
+/* ===== LOGOUT ===== */
 function logout(){
     localStorage.removeItem("ADMIN_TOKEN");
     location.href="login.html";
 }
 
-function exportCSV(){
-    window.open(API + "/admin/export?token=" + token);
+/* ===== TIME ===== */
+function formatIST(date){
+    if(!date) return "--";
+    return new Date(date).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});
 }
 
+/* ===== PAGINATION ===== */
+let page=1;
+
+/* ===== LOAD STATS ===== */
 async function loadStats(){
+    try{
+        const res=await fetch(API+"/admin/stats",{
+            headers:{Authorization:"Bearer "+token}
+        });
 
-    const res = await fetch(API+"/admin/stats",{
-        headers:{Authorization:"Bearer "+token}
-    });
+        const d=await res.json();
 
-    const d = await res.json();
+        document.getElementById("total").innerText=d.total_messages||0;
+        document.getElementById("read").innerText=d.read_messages||0;
+        document.getElementById("unread").innerText=d.unread_messages||0;
+        document.getElementById("last").innerText=formatIST(d.last_message_time);
 
-    document.getElementById("total").innerText = d.total_messages;
-    document.getElementById("read").innerText = d.read_messages;
-    document.getElementById("unread").innerText = d.unread_messages;
+        drawChart(d.read_messages||0,d.unread_messages||0);
+
+    }catch{
+        console.log("stats error");
+    }
 }
 
+/* ===== CHART ===== */
+let chart;
+function drawChart(r,u){
+    const ctx=document.getElementById("chart");
+
+    if(chart) chart.destroy();
+
+    chart=new Chart(ctx,{
+        type:"pie",
+        data:{
+            labels:["Read","Unread"],
+            datasets:[{
+                data:[r,u],
+                backgroundColor:["#2ecc71","#e74c3c"]
+            }]
+        }
+    });
+}
+
+/* ===== LOAD MESSAGES ===== */
 async function loadMessages(){
 
-    const search = document.getElementById("search").value;
+    const box=document.getElementById("messages");
+    const search=document.getElementById("searchInput").value;
 
-    const res = await fetch(
-        API+`/admin/messages?page=${page}&limit=5&search=${search}`,{
-        headers:{Authorization:"Bearer "+token}
-    });
+    try{
 
-    const data = await res.json();
+        const res=await fetch(`${API}/admin/messages?page=${page}&limit=10&search=${search}`,{
+            headers:{Authorization:"Bearer "+token}
+        });
 
-    const box = document.getElementById("messages");
-    box.innerHTML="";
+        const data=await res.json();
+        const msgs=data.messages||[];
 
-    if(!data.messages.length){
-        box.innerText="No messages";
-        return;
+        box.innerHTML="";
+
+        if(!msgs.length){
+            box.innerText="No messages found";
+            return;
+        }
+
+        msgs.forEach(m=>{
+            const div=document.createElement("div");
+            div.className="message-card";
+
+            div.innerHTML=`
+                <b>${m.name}</b> (${m.email})<br><br>
+                ${m.message}<br><br>
+                <small>${formatIST(m.created_at)}</small><br>
+                <button onclick="toggle(${m.id})">Toggle</button>
+                <button onclick="del(${m.id})">Delete</button>
+            `;
+
+            box.appendChild(div);
+        });
+
+    }catch{
+        box.innerText="Error loading messages";
     }
 
-    data.messages.forEach(m=>{
-
-        const div=document.createElement("div");
-        div.className="card";
-
-        div.innerHTML=`
-            <b>${m.name}</b> (${m.email})
-            <p>${m.message}</p>
-            <small>${new Date(m.created_at).toLocaleString()}</small>
-            <br>
-            <button onclick="toggle(${m.id})">
-                ${m.is_read ? "Unread":"Read"}
-            </button>
-            <button onclick="del(${m.id})">Delete</button>
-        `;
-
-        box.appendChild(div);
-    });
-
-    document.getElementById("page").innerText = page;
+    document.getElementById("pageNum").innerText=page;
 }
 
+/* ===== TOGGLE ===== */
 async function toggle(id){
-    await fetch(API+`/admin/messages/${id}/toggle-read`,{
+    await fetch(`${API}/admin/messages/${id}/toggle-read`,{
         method:"PUT",
         headers:{Authorization:"Bearer "+token}
     });
@@ -167,10 +264,11 @@ async function toggle(id){
     loadStats();
 }
 
+/* ===== DELETE ===== */
 async function del(id){
-    if(!confirm("Delete?")) return;
+    if(!confirm("Delete this message?")) return;
 
-    await fetch(API+`/admin/messages/${id}`,{
+    await fetch(`${API}/admin/messages/${id}`,{
         method:"DELETE",
         headers:{Authorization:"Bearer "+token}
     });
@@ -179,9 +277,20 @@ async function del(id){
     loadStats();
 }
 
-function next(){ page++; loadMessages(); }
-function prev(){ if(page>1) page--; loadMessages(); }
+/* ===== PAGINATION ===== */
+function nextPage(){
+    page++;
+    loadMessages();
+}
 
+function prevPage(){
+    if(page>1){
+        page--;
+        loadMessages();
+    }
+}
+
+/* ===== INIT ===== */
 loadStats();
 loadMessages();
 
