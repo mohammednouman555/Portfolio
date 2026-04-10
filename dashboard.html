@@ -2,16 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Admin Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body { font-family: Arial; background:#f4f6f9; }
-.dashboard { max-width:900px; margin:auto; padding:20px; }
-.message-card { background:white; padding:10px; margin:10px 0; }
-button { margin:5px; padding:5px 10px; }
+
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+}
+
+.dashboard {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 8px;
+    width: 200px;
+}
+
+button {
+    padding: 8px 12px;
+    background: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
 </style>
 </head>
 
@@ -19,14 +57,32 @@ button { margin:5px; padding:5px 10px; }
 
 <div class="dashboard">
 
-<h2>Admin Dashboard</h2>
-<button onclick="logout()">Logout</button>
+<div class="top">
+    <h2>Admin Dashboard</h2>
+    <button onclick="logout()">Logout</button>
+</div>
 
-<p>Total: <span id="total">0</span></p>
+<div style="display:flex; gap:10px;">
+    <input id="search" placeholder="Search name/email">
+    <button onclick="loadMessages()">Search</button>
+    <button onclick="exportCSV()">Export CSV</button>
+</div>
+
+<p>
+Total: <span id="total">0</span> |
+Read: <span id="read">0</span> |
+Unread: <span id="unread">0</span>
+</p>
 
 <hr>
 
 <div id="messages">Loading...</div>
+
+<div class="pagination">
+    <button onclick="prev()">Prev</button>
+    <span id="page">1</span>
+    <button onclick="next()">Next</button>
+</div>
 
 </div>
 
@@ -35,96 +91,99 @@ button { margin:5px; padding:5px 10px; }
 const API = "https://portfolio-backend-rgbj.onrender.com";
 const token = localStorage.getItem("ADMIN_TOKEN");
 
-/* 🔴 FIX: PROTECT ROUTE */
-if(!token){
-    window.location.href="login.html";
-}
+if(!token) location.href="login.html";
 
-/* ================= LOGOUT ================= */
+let page = 1;
+
 function logout(){
     localStorage.removeItem("ADMIN_TOKEN");
-    window.location.href="login.html";
+    location.href="login.html";
 }
 
-/* ================= LOAD DATA ================= */
+function exportCSV(){
+    window.open(API + "/admin/export?token=" + token);
+}
 
-async function load(){
+async function loadStats(){
 
-    try{
+    const res = await fetch(API+"/admin/stats",{
+        headers:{Authorization:"Bearer "+token}
+    });
 
-        /* ---------- STATS ---------- */
-        const s = await fetch(API+"/admin/stats",{
-            headers:{Authorization:"Bearer "+token}
-        });
+    const d = await res.json();
 
-        if(s.status===401){
-            logout();
-            return;
-        }
+    document.getElementById("total").innerText = d.total_messages;
+    document.getElementById("read").innerText = d.read_messages;
+    document.getElementById("unread").innerText = d.unread_messages;
+}
 
-        const stats = await s.json();
+async function loadMessages(){
 
-        document.getElementById("total").innerText =
-            stats.total_messages || 0;
+    const search = document.getElementById("search").value;
 
-        /* ---------- MESSAGES ---------- */
-        const r = await fetch(API+"/admin/messages?limit=20",{
-            headers:{Authorization:"Bearer "+token}
-        });
+    const res = await fetch(
+        API+`/admin/messages?page=${page}&limit=5&search=${search}`,{
+        headers:{Authorization:"Bearer "+token}
+    });
 
-        const data = await r.json();
+    const data = await res.json();
 
-        const messages = data.messages || [];
+    const box = document.getElementById("messages");
+    box.innerHTML="";
 
-        const box = document.getElementById("messages");
-        box.innerHTML="";
-
-        if(messages.length===0){
-            box.innerText="No messages found";
-            return;
-        }
-
-        messages.forEach(m=>{
-
-            const div=document.createElement("div");
-
-            div.className="message-card";
-
-            div.innerHTML=`
-                <p>${m.name}</p>
-                <p>${m.email}</p>
-                <p>${m.message}</p>
-
-                <button onclick="deleteMsg(${m.id})">Delete</button>
-            `;
-
-            box.appendChild(div);
-        });
-
-    }catch(e){
-
-        console.error(e);
-        document.getElementById("messages").innerText =
-            "Error loading data";
-
+    if(!data.messages.length){
+        box.innerText="No messages";
+        return;
     }
+
+    data.messages.forEach(m=>{
+
+        const div=document.createElement("div");
+        div.className="card";
+
+        div.innerHTML=`
+            <b>${m.name}</b> (${m.email})
+            <p>${m.message}</p>
+            <small>${new Date(m.created_at).toLocaleString()}</small>
+            <br>
+            <button onclick="toggle(${m.id})">
+                ${m.is_read ? "Unread":"Read"}
+            </button>
+            <button onclick="del(${m.id})">Delete</button>
+        `;
+
+        box.appendChild(div);
+    });
+
+    document.getElementById("page").innerText = page;
 }
 
-/* ================= DELETE ================= */
+async function toggle(id){
+    await fetch(API+`/admin/messages/${id}/toggle-read`,{
+        method:"PUT",
+        headers:{Authorization:"Bearer "+token}
+    });
+    loadMessages();
+    loadStats();
+}
 
-async function deleteMsg(id){
+async function del(id){
+    if(!confirm("Delete?")) return;
 
     await fetch(API+`/admin/messages/${id}`,{
         method:"DELETE",
         headers:{Authorization:"Bearer "+token}
     });
 
-    load();
+    loadMessages();
+    loadStats();
 }
 
-/* ================= INIT ================= */
+function next(){ page++; loadMessages(); }
+function prev(){ if(page>1) page--; loadMessages(); }
 
-load();
+loadStats();
+loadMessages();
 
 </script>
 
