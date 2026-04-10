@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
 body {
     background: #f4f6f9;
     font-family: Arial, sans-serif;
@@ -22,19 +23,28 @@ body {
 .top-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
 button {
     padding: 8px 12px;
     cursor: pointer;
+    border: none;
+    background: #0077b6;
+    color: white;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #023e8a;
 }
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
 .stat-box {
@@ -44,23 +54,34 @@ button {
     text-align: center;
 }
 
+.stat-box h3 {
+    margin: 0;
+    color: #0077b6;
+}
+
+.stat-box p {
+    font-size: 22px;
+    font-weight: bold;
+}
+
 .chart-box {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .message-card {
     background: white;
     padding: 15px;
-    margin: 10px 0;
+    margin: 12px 0;
     border-radius: 8px;
 }
 
 .read {
     opacity: 0.6;
 }
+
 </style>
 </head>
 
@@ -84,134 +105,219 @@ button {
     <canvas id="chart"></canvas>
 </div>
 
+<hr>
+
 <div id="messages">Loading...</div>
 
 </div>
 
 <script>
 
+/* ================= CONFIG ================= */
+
 const API_URL = "https://portfolio-backend-rgbj.onrender.com";
 const token = localStorage.getItem("ADMIN_TOKEN");
 
-if (!token) location.href = "login.html";
+if (!token) {
+    window.location.href = "login.html";
+}
 
-function logout(){
+/* ================= LOGOUT ================= */
+
+function logout() {
     localStorage.removeItem("ADMIN_TOKEN");
-    location.href="login.html";
+    window.location.href = "login.html";
 }
 
-function formatIST(date){
-    if(!date) return "--";
-    return new Date(date).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});
-}
+/* ================= TIME FORMAT ================= */
 
-let chart;
-
-async function loadStats(){
-    const res = await fetch(API_URL+"/admin/stats",{
-        headers:{Authorization:"Bearer "+token}
+function formatIST(date) {
+    if (!date) return "--";
+    return new Date(date).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata"
     });
+}
 
-    if(res.status===401){logout();return;}
+/* ================= LOAD STATS ================= */
 
-    const d = await res.json();
+let chart = null;
 
-    document.getElementById("totalCount").innerText = d.total_messages || 0;
-    document.getElementById("readCount").innerText = d.read_messages || 0;
-    document.getElementById("unreadCount").innerText = d.unread_messages || 0;
-    document.getElementById("lastTime").innerText = formatIST(d.last_message_time);
+async function loadStats() {
 
-    if(chart) chart.destroy();
+    try {
 
-    chart = new Chart(document.getElementById("chart"),{
-        type:"pie",
-        data:{
-            labels:["Read","Unread"],
-            datasets:[{
-                data:[d.read_messages || 0, d.unread_messages || 0],
-                backgroundColor:["green","red"]
-            }]
+        const res = await fetch(API_URL + "/admin/stats", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (res.status === 401) {
+            logout();
+            return;
         }
-    });
+
+        const d = await res.json();
+
+        document.getElementById("totalCount").innerText = d.total_messages || 0;
+        document.getElementById("readCount").innerText = d.read_messages || 0;
+        document.getElementById("unreadCount").innerText = d.unread_messages || 0;
+        document.getElementById("lastTime").innerText = formatIST(d.last_message_time);
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(document.getElementById("chart"), {
+            type: "pie",
+            data: {
+                labels: ["Read", "Unread"],
+                datasets: [{
+                    data: [
+                        d.read_messages || 0,
+                        d.unread_messages || 0
+                    ],
+                    backgroundColor: ["#2ecc71", "#e74c3c"]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error("Stats error:", err);
+    }
 }
 
-async function loadMessages(){
+/* ================= LOAD MESSAGES ================= */
 
-    const res = await fetch(API_URL+"/admin/messages?limit=20",{
-        headers:{Authorization:"Bearer "+token}
-    });
+async function loadMessages() {
 
-    if(res.status===401){logout();return;}
+    try {
 
-    const data = await res.json();
+        const res = await fetch(API_URL + "/admin/messages?limit=20", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
 
-    console.log("DATA:", data);
+        if (res.status === 401) {
+            logout();
+            return;
+        }
 
-    const messages = data.messages || [];
+        const data = await res.json();
 
-    renderMessages(messages);
+        console.log("Messages API:", data);
+
+        const messages = data.messages || [];
+
+        renderMessages(messages);
+
+    } catch (err) {
+
+        console.error("Messages error:", err);
+
+        document.getElementById("messages").innerText =
+            "Failed to load messages.";
+
+    }
 }
 
-function renderMessages(messages){
+/* ================= RENDER ================= */
+
+function renderMessages(messages) {
 
     const box = document.getElementById("messages");
     box.innerHTML = "";
 
-    if(messages.length===0){
-        box.innerText="No messages found.";
+    if (!messages.length) {
+        box.innerText = "No messages found.";
         return;
     }
 
-    messages.forEach(m=>{
+    messages.forEach(m => {
 
-        const div=document.createElement("div");
-        div.className="message-card";
+        const div = document.createElement("div");
 
-        if(m.is_read) div.classList.add("read");
+        div.className = "message-card";
 
-        div.innerHTML=`
-            <p><b>Name:</b> ${m.name}</p>
-            <p><b>Email:</b> ${m.email}</p>
-            <p><b>Message:</b> ${m.message}</p>
-            <p>${formatIST(m.created_at)}</p>
+        if (m.is_read) div.classList.add("read");
+
+        div.innerHTML = `
+            <p><strong>Name:</strong> ${m.name}</p>
+            <p><strong>Email:</strong> ${m.email}</p>
+            <p><strong>Message:</strong> ${m.message}</p>
+            <p><small>${formatIST(m.created_at)}</small></p>
 
             <button onclick="toggleRead(${m.id})">
-                ${m.is_read ? "Unread":"Read"}
+                ${m.is_read ? "Mark Unread" : "Mark Read"}
             </button>
 
-            <button onclick="deleteMsg(${m.id})">Delete</button>
+            <button onclick="deleteMsg(${m.id})">
+                Delete
+            </button>
         `;
 
         box.appendChild(div);
     });
 }
 
-async function toggleRead(id){
+/* ================= TOGGLE ================= */
 
-    await fetch(API_URL+`/admin/messages/${id}/toggle-read`,{
-        method:"PUT",
-        headers:{Authorization:"Bearer "+token}
-    });
+async function toggleRead(id) {
 
-    loadMessages();
-    loadStats();
+    try {
+
+        await fetch(API_URL + `/admin/messages/${id}/toggle-read`, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        await loadMessages();
+        await loadStats();
+
+    } catch (err) {
+        console.error("Toggle error:", err);
+    }
 }
 
-async function deleteMsg(id){
+/* ================= DELETE ================= */
 
-    if(!confirm("Delete?")) return;
+async function deleteMsg(id) {
 
-    await fetch(API_URL+`/admin/messages/${id}`,{
-        method:"DELETE",
-        headers:{Authorization:"Bearer "+token}
-    });
+    if (!confirm("Delete this message?")) return;
 
-    loadMessages();
-    loadStats();
+    try {
+
+        await fetch(API_URL + `/admin/messages/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        await loadMessages();
+        await loadStats();
+
+    } catch (err) {
+        console.error("Delete error:", err);
+    }
 }
 
-loadStats();
-loadMessages();
+/* ================= INIT ================= */
+
+async function init() {
+    await loadStats();
+    await loadMessages();
+}
+
+init();
 
 </script>
 
