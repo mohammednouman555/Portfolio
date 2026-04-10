@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Mohammed Nouman | Portfolio</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -21,11 +22,12 @@ body {
 nav {
     display: flex;
     justify-content: space-between;
-    padding: 15px 30px;
+    padding: 15px 40px;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
+    z-index: 100;
 }
 
 nav a {
@@ -39,96 +41,114 @@ nav a {
 
 .hero {
     text-align: center;
-    padding: 70px 20px;
+    padding: 80px 20px;
     background: linear-gradient(120deg, #e0f2fe, #f8fafc);
 }
 
 .hero h1 {
+    font-size: 42px;
     margin: 0;
-    font-size: 40px;
 }
 
 .hero p {
-    margin-top: 10px;
     color: #64748b;
+    margin-top: 10px;
 }
 
-/* ===== SECTION ===== */
+/* ===== SECTIONS ===== */
 
 section {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: auto;
-    padding: 50px 20px;
+    padding: 60px 20px;
 }
 
-/* ===== CONTACT PREMIUM CARD ===== */
+/* ===== ABOUT ===== */
+
+.about {
+    text-align: center;
+}
+
+/* ===== SKILLS ===== */
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.skill {
+    background: white;
+    padding: 10px 15px;
+    margin: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ===== PROJECTS ===== */
+
+.projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
+}
+
+.project-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+.project-card a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* ===== CONTACT ===== */
 
 .contact-box {
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
     max-width: 600px;
     margin: auto;
-}
-
-/* INPUTS */
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-label {
-    font-size: 14px;
-    font-weight: 500;
-    display: block;
-    margin-bottom: 5px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 input, textarea {
     width: 100%;
     padding: 12px;
+    margin: 8px 0;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s;
 }
-
-input:focus, textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 5px rgba(59,130,246,0.3);
-}
-
-/* BUTTON */
 
 button {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(90deg, #3b82f6, #2563eb);
-    border: none;
+    background: #2563eb;
     color: white;
-    font-size: 15px;
-    font-weight: 500;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
 }
-
-button:hover {
-    opacity: 0.9;
-}
-
-/* SUCCESS MESSAGE */
 
 .success {
     text-align: center;
     margin-top: 10px;
-    color: #16a34a;
-    font-weight: 500;
+    color: green;
 }
 
-/* FOOTER */
+/* ===== FOOTER ===== */
 
 footer {
     text-align: center;
@@ -141,10 +161,13 @@ footer {
 
 <body>
 
-<!-- NAV -->
+<!-- NAVBAR -->
 <nav>
     <div><b>Nouman</b></div>
     <div>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
         <a href="#contact">Contact</a>
     </div>
 </nav>
@@ -152,30 +175,64 @@ footer {
 <!-- HERO -->
 <div class="hero">
     <h1>Mohammed Nouman</h1>
-    <p>Computer Science Engineer | Developer</p>
+    <p>Computer Science Engineering Student | Developer</p>
 </div>
+
+<!-- ABOUT -->
+<section id="about" class="about">
+    <h2>About Me</h2>
+    <p>
+        I am a Computer Science Engineering student passionate about building
+        real-world applications using Python, Java, and Web Technologies.
+    </p>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+    <h2 style="text-align:center;">Skills</h2>
+
+    <div class="skills">
+        <div class="skill">Python</div>
+        <div class="skill">Java</div>
+        <div class="skill">C</div>
+        <div class="skill">HTML</div>
+        <div class="skill">CSS</div>
+        <div class="skill">JavaScript</div>
+        <div class="skill">Git & GitHub</div>
+    </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+    <h2 style="text-align:center;">Projects</h2>
+
+    <div class="projects">
+
+        <div class="project-card">
+            <h3>File Organizer</h3>
+            <p>Python automation tool that organizes files automatically.</p>
+            <a href="https://github.com/mohammednouman555" target="_blank">View Project</a>
+        </div>
+
+        <div class="project-card">
+            <h3>Portfolio Website</h3>
+            <p>Full-stack portfolio with admin dashboard.</p>
+            <a href="https://mohammednouman555.github.io/Portfolio/" target="_blank">Live Demo</a>
+        </div>
+
+    </div>
+</section>
 
 <!-- CONTACT -->
 <section id="contact">
 
-    <h2 style="text-align:center;margin-bottom:20px;">Contact Me</h2>
+    <h2 style="text-align:center;">Contact Me</h2>
 
     <div class="contact-box">
 
-        <div class="input-group">
-            <label>Name</label>
-            <input type="text" id="name" placeholder="Enter your name">
-        </div>
-
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="email" placeholder="Enter your email">
-        </div>
-
-        <div class="input-group">
-            <label>Message</label>
-            <textarea id="message" rows="5" placeholder="Write your message..."></textarea>
-        </div>
+        <input id="name" placeholder="Your Name">
+        <input id="email" placeholder="Your Email">
+        <textarea id="message" rows="5" placeholder="Your Message"></textarea>
 
         <button onclick="sendMessage()">Send Message</button>
 
@@ -186,7 +243,7 @@ footer {
 </section>
 
 <footer>
-© 2026 Mohammed Nouman
+© 2026 Mohammed Nouman | All Rights Reserved
 </footer>
 
 <script>
@@ -214,15 +271,12 @@ async function sendMessage(){
 
         if(res.ok){
             document.getElementById("response").innerText = "Message sent successfully!";
-            document.getElementById("name").value="";
-            document.getElementById("email").value="";
-            document.getElementById("message").value="";
         } else {
             document.getElementById("response").innerText = "Failed to send message.";
         }
 
     } catch {
-        document.getElementById("response").innerText = "Server error. Try again.";
+        document.getElementById("response").innerText = "Server error.";
     }
 }
 
