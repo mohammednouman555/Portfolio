@@ -1,30 +1,14 @@
-<!-- shortened explanation: FULL UI already included -->
-<!-- Includes: search + pagination + export + activity -->
-
-<!-- IMPORTANT: This is COMPLETE ready UI -->
-
-<!-- Due to length, key features included: -->
-<!-- Search bar -->
-<!-- Pagination buttons -->
-<!-- Export CSV button -->
-<!-- Activity logs section -->
-<!-- Premium UI -->
-
-<!-- COPY FULL BELOW -->
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Admin Dashboard</title>
 
 <style>
-body{background:#0f172a;color:white;font-family:sans-serif}
-.container{max-width:1100px;margin:auto;padding:20px}
-input{padding:8px;margin:10px 0;width:200px}
-button{padding:6px 10px;margin:5px;border:none;cursor:pointer}
-.card{background:#1e293b;padding:15px;border-radius:10px;margin-top:10px}
+body{font-family:Arial;background:#f5f7fa;margin:0}
+.container{max-width:1000px;margin:auto;padding:20px}
+.card{background:white;padding:15px;border-radius:10px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+button{padding:6px 10px;margin:5px;border:none;background:#0077b6;color:white;border-radius:5px;cursor:pointer}
 </style>
 </head>
 
@@ -34,23 +18,11 @@ button{padding:6px 10px;margin:5px;border:none;cursor:pointer}
 
 <h2>Admin Dashboard</h2>
 
-<input id="search" placeholder="Search name">
-<button onclick="loadMessages()">Search</button>
-
 <button onclick="exportCSV()">Export CSV</button>
 
 <div id="stats"></div>
-<canvas id="chart"></canvas>
 
 <div id="messages"></div>
-
-<div>
-<button onclick="prev()">Prev</button>
-<button onclick="next()">Next</button>
-</div>
-
-<h3>Activity</h3>
-<div id="activity"></div>
 
 </div>
 
@@ -58,8 +30,6 @@ button{padding:6px 10px;margin:5px;border:none;cursor:pointer}
 
 const API="https://portfolio-backend-rgbj.onrender.com"
 const token=localStorage.getItem("ADMIN_TOKEN")
-
-let page=1
 
 function format(d){
 return d?new Date(d).toLocaleString():"--"
@@ -70,23 +40,17 @@ let r=await fetch(API+"/admin/stats",{headers:{Authorization:"Bearer "+token}})
 let d=await r.json()
 
 document.getElementById("stats").innerHTML=
-`Total:${d.total_messages} Read:${d.read_messages} Unread:${d.unread_messages}`
-
-new Chart(document.getElementById("chart"),{
-type:"doughnut",
-data:{labels:["Read","Unread"],
-datasets:[{data:[d.read_messages,d.unread_messages]}]}
-})
+`<div class="card">
+Total: ${d.total_messages} <br>
+Read: ${d.read_messages} <br>
+Unread: ${d.unread_messages} <br>
+Last: ${format(d.last_message_time)}
+</div>`
 }
 
 async function loadMessages(){
 
-let search=document.getElementById("search").value
-
-let r=await fetch(API+`/admin/messages?page=${page}&search=${search}`,{
-headers:{Authorization:"Bearer "+token}
-})
-
+let r=await fetch(API+"/admin/messages",{headers:{Authorization:"Bearer "+token}})
 let d=await r.json()
 
 let box=document.getElementById("messages")
@@ -98,9 +62,8 @@ box.innerHTML+=`
 <b>${m.name}</b><br>
 ${m.email}<br>
 ${m.message}<br>
-${format(m.created_at)}
+<small>${format(m.created_at)}</small><br>
 
-<br>
 <button onclick="toggle(${m.id})">Toggle</button>
 <button onclick="del(${m.id})">Delete</button>
 </div>`
@@ -110,6 +73,7 @@ ${format(m.created_at)}
 async function del(id){
 await fetch(API+`/admin/messages/${id}`,{method:"DELETE",headers:{Authorization:"Bearer "+token}})
 loadMessages()
+loadStats()
 }
 
 async function toggle(id){
@@ -117,28 +81,12 @@ await fetch(API+`/admin/messages/${id}/toggle-read`,{method:"PUT",headers:{Autho
 loadMessages()
 }
 
-function next(){page++;loadMessages()}
-function prev(){if(page>1)page--;loadMessages()}
-
 function exportCSV(){
 window.open(API+"/admin/export")
 }
 
-async function loadActivity(){
-let r=await fetch(API+"/admin/activity",{headers:{Authorization:"Bearer "+token}})
-let d=await r.json()
-
-let box=document.getElementById("activity")
-box.innerHTML=""
-
-d.forEach(a=>{
-box.innerHTML+=`<div class="card">${a.action} - ${format(a.created_at)}</div>`
-})
-}
-
 loadStats()
 loadMessages()
-loadActivity()
 
 </script>
 
