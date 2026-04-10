@@ -2,353 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Dashboard</title>
+<title>Admin Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-
 body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #eef2f7;
-}
-
-/* ================= CONTAINER ================= */
-
-.dashboard {
-    max-width: 1100px;
-    margin: auto;
-    padding: 25px;
-}
-
-/* ================= TOP BAR ================= */
-
-.top-bar {
+    font-family: Arial;
+    background: #03045e;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 25px;
+    height: 100vh;
 }
-
-.top-bar h2 {
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.logout-btn {
-    background: #ef4444;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.logout-btn:hover {
-    background: #dc2626;
-}
-
-/* ================= STATS ================= */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.stat-box {
+.box {
     background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 25px;
+    border-radius: 10px;
+    width: 300px;
     text-align: center;
 }
-
-.stat-box h3 {
-    margin: 0;
-    font-size: 14px;
-    color: #64748b;
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
 }
-
-.stat-box p {
-    font-size: 26px;
-    font-weight: 600;
-    margin-top: 10px;
-    color: #0f172a;
-}
-
-/* ================= CHART ================= */
-
-.chart-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 25px;
-}
-
-/* ================= MESSAGES ================= */
-
-.message-card {
-    background: white;
-    padding: 18px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.07);
-    transition: 0.3s;
-}
-
-.message-card:hover {
-    transform: translateY(-2px);
-}
-
-.message-card.read {
-    opacity: 0.6;
-}
-
-.message-card p {
-    margin: 5px 0;
-}
-
-.message-actions {
-    margin-top: 10px;
-}
-
 button {
-    padding: 6px 12px;
+    width: 100%;
+    padding: 10px;
+    background: #0077b6;
+    color: white;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
 }
-
-/* Buttons */
-
-.read-btn {
-    background: #22c55e;
-    color: white;
-}
-
-.unread-btn {
-    background: #f59e0b;
-    color: white;
-}
-
-.delete-btn {
-    background: #ef4444;
-    color: white;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="dashboard">
+<div class="box">
+<h2>Admin Login</h2>
 
-    <!-- TOP BAR -->
-    <div class="top-bar">
-        <h2>Admin Dashboard</h2>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
 
-    <!-- STATS -->
-    <div class="stats">
-        <div class="stat-box">
-            <h3>Total</h3>
-            <p id="totalCount">0</p>
-        </div>
-        <div class="stat-box">
-            <h3>Read</h3>
-            <p id="readCount">0</p>
-        </div>
-        <div class="stat-box">
-            <h3>Unread</h3>
-            <p id="unreadCount">0</p>
-        </div>
-        <div class="stat-box">
-            <h3>Last Message</h3>
-            <p id="lastTime">--</p>
-        </div>
-    </div>
+<button onclick="login()">Login</button>
 
-    <!-- CHART -->
-    <div class="chart-box">
-        <canvas id="messageChart"></canvas>
-    </div>
-
-    <!-- MESSAGES -->
-    <div id="messages">Loading...</div>
-
+<p id="msg"></p>
 </div>
 
 <script>
 
-const API_URL = "https://portfolio-backend-rgbj.onrender.com";
-const token = localStorage.getItem("ADMIN_TOKEN");
+const API = "https://portfolio-backend-rgbj.onrender.com";
 
-if (!token) window.location.href = "login.html";
+/* 🔴 FIX: REMOVE OLD TOKEN ALWAYS */
+localStorage.removeItem("ADMIN_TOKEN");
 
-/* ================= LOGOUT ================= */
+async function login(){
 
-function logout() {
-    localStorage.removeItem("ADMIN_TOKEN");
-    window.location.href = "login.html";
-}
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-/* ================= TIME ================= */
+    const msg = document.getElementById("msg");
+    msg.innerText = "Logging in...";
 
-function formatIST(dateString) {
-    if (!dateString) return "--";
+    try{
 
-    const date = new Date(dateString);
+        const res = await fetch(API + "/admin/login",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({username,password})
+        });
 
-    return date.toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata"
-    });
-}
+        const data = await res.json();
 
-/* ================= STATS ================= */
+        if(res.ok && data.access_token){
 
-let chart;
+            localStorage.setItem("ADMIN_TOKEN", data.access_token);
 
-async function loadStats() {
+            window.location.href="dashboard.html";
 
-    const res = await fetch(API_URL + "/admin/stats", {
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    if (res.status === 401) return logout();
-
-    const data = await res.json();
-
-    document.getElementById("totalCount").innerText = data.total_messages;
-    document.getElementById("readCount").innerText = data.read_messages;
-    document.getElementById("unreadCount").innerText = data.unread_messages;
-    document.getElementById("lastTime").innerText = formatIST(data.last_message_time);
-
-    renderChart(data.read_messages, data.unread_messages);
-}
-
-function renderChart(read, unread) {
-
-    const ctx = document.getElementById("messageChart");
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: ["Read", "Unread"],
-            datasets: [{
-                data: [read, unread],
-                backgroundColor: ["#22c55e", "#ef4444"]
-            }]
+        }else{
+            msg.innerText = "Invalid credentials";
         }
-    });
-}
 
-/* ================= LOAD MESSAGES ================= */
-
-async function loadMessages() {
-
-    const res = await fetch(API_URL + "/admin/messages?limit=20", {
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    if (res.status === 401) return logout();
-
-    const data = await res.json();
-
-    renderMessages(data.messages);
-}
-
-function renderMessages(messages) {
-
-    const box = document.getElementById("messages");
-    box.innerHTML = "";
-
-    if (!messages.length) {
-        box.innerText = "No messages";
-        return;
+    }catch{
+        msg.innerText = "Server error";
     }
-
-    messages.forEach(msg => {
-
-        const div = document.createElement("div");
-        div.className = "message-card";
-
-        if (msg.is_read) div.classList.add("read");
-
-        div.innerHTML = `
-            <p><strong>${msg.name}</strong></p>
-            <p>${msg.email}</p>
-            <p>${msg.message}</p>
-            <p><small>${formatIST(msg.created_at)}</small></p>
-
-            <div class="message-actions">
-
-                <button class="${msg.is_read ? 'unread-btn' : 'read-btn'}"
-                    onclick="toggleRead(${msg.id})">
-                    ${msg.is_read ? "Mark Unread" : "Mark Read"}
-                </button>
-
-                <button class="delete-btn"
-                    onclick="deleteMessage(${msg.id})">
-                    Delete
-                </button>
-
-            </div>
-        `;
-
-        box.appendChild(div);
-    });
 }
-
-/* ================= TOGGLE ================= */
-
-async function toggleRead(id) {
-
-    await fetch(API_URL + `/admin/messages/${id}/toggle-read`, {
-        method: "PUT",
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    loadMessages();
-    loadStats();
-}
-
-/* ================= DELETE ================= */
-
-async function deleteMessage(id) {
-
-    if (!confirm("Delete this message?")) return;
-
-    await fetch(API_URL + `/admin/messages/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    loadMessages();
-    loadStats();
-}
-
-/* ================= INIT ================= */
-
-loadStats();
-loadMessages();
 
 </script>
 
