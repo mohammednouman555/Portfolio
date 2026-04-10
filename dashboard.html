@@ -1,447 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
 
-    <link rel="stylesheet" href="style.css">
+body {
+    background: #f4f6f9;
+    font-family: 'Segoe UI';
+}
 
-    <style>
+.dashboard {
+    max-width: 1000px;
+    margin: auto;
+    padding: 30px;
+}
 
-        body {
-            background: #f4f6f9;
-            font-family: Arial, sans-serif;
-        }
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+}
 
-        .dashboard {
-            max-width: 1000px;
-            margin: auto;
-            padding: 30px;
-        }
+button {
+    background: #0077b6;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+}
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
+.message-card {
+    background: white;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 5px solid #0077b6;
+    border-radius: 6px;
+}
 
-        /* ================= STATS ================= */
+.read {
+    opacity: 0.6;
+}
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 0 8px rgba(0,0,0,0.12);
-        }
-
-        .stat-box h3 {
-            margin: 0;
-            color: #0077b6;
-            font-size: 18px;
-        }
-
-        .stat-box p {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-
-        /* ================= CHART ================= */
-
-        .chart-box {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.12);
-            margin-bottom: 30px;
-        }
-
-        /* ================= MESSAGES ================= */
-
-        .message-card {
-            background: white;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.12);
-        }
-
-        .message-card button {
-            margin-right: 8px;
-            padding: 6px 12px;
-            cursor: pointer;
-        }
-
-        .read {
-            opacity: 0.6;
-        }
-
-    </style>
+</style>
 </head>
+
 <body>
 
 <div class="dashboard">
 
-    <!-- ================= TOP ================= -->
+<div class="top-bar">
+<h2>Admin Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</div>
 
-    <div class="top-bar">
+<input id="searchInput" placeholder="Search...">
+<button onclick="searchMessages()">Search</button>
 
-        <h2>Admin Dashboard</h2>
-
-        <button onclick="logout()">Logout</button>
-
-    </div>
-
-
-    <!-- ================= STATS ================= -->
-
-    <div class="stats">
-
-        <div class="stat-box">
-            <h3>Total</h3>
-            <p id="totalCount">0</p>
-        </div>
-
-        <div class="stat-box">
-            <h3>Read</h3>
-            <p id="readCount">0</p>
-        </div>
-
-        <div class="stat-box">
-            <h3>Unread</h3>
-            <p id="unreadCount">0</p>
-        </div>
-
-        <div class="stat-box">
-            <h3>Last Message</h3>
-            <p id="lastTime">--</p>
-        </div>
-
-    </div>
-
-
-    <!-- ================= CHART ================= -->
-
-    <div class="chart-box">
-        <canvas id="messageChart" height="120"></canvas>
-    </div>
-
-
-    <hr>
-
-
-    <!-- ================= MESSAGES ================= -->
-
-    <div id="messages">Loading...</div>
+<div id="messages"></div>
 
 </div>
 
-
 <script>
 
-    /* ================= CONFIG ================= */
+const API_URL = "https://portfolio-backend-rgbj.onrender.com";
+const token = localStorage.getItem("ADMIN_TOKEN");
 
-    const API_URL = "https://portfolio-backend-rgbj.onrender.com";
+function logout(){
+    localStorage.removeItem("ADMIN_TOKEN");
+    location.href="login.html";
+}
 
-    const token = localStorage.getItem("ADMIN_TOKEN");
+async function loadMessages(page=1, search=""){
 
-    if (!token) {
-        window.location.href = "login.html";
-    }
+    const res = await fetch(
+        API_URL + `/admin/messages?page=${page}&limit=5&search=${search}`,
+        {
+            headers:{Authorization:"Bearer "+token}
+        }
+    );
 
+    const data = await res.json();
+    renderMessages(data.messages);
+}
 
-    /* ================= LOGOUT ================= */
+function renderMessages(messages){
 
-    function logout() {
+    const box = document.getElementById("messages");
+    box.innerHTML="";
 
-        localStorage.removeItem("ADMIN_TOKEN");
+    messages.forEach(msg=>{
 
-        window.location.href = "login.html";
+        const div=document.createElement("div");
 
-    }
+        div.className="message-card";
 
-
-    /* ================= TIME FORMAT ================= */
-
-    function formatIST(dateString) {
-
-        if (!dateString) return "--";
-
-        const date = new Date(dateString);
-
-        return date.toLocaleString("en-IN", {
-            timeZone: "Asia/Kolkata"
-        });
-    }
-
-
-    /* ================= STATS ================= */
-
-    let chart = null;
-
-    async function loadStats() {
-
-        try {
-
-            const res = await fetch(API_URL + "/admin/stats", {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            });
-
-            if (res.status === 401) {
-                logout();
-                return;
-            }
-
-            const data = await res.json();
-
-            document.getElementById("totalCount").innerText =
-                data.total_messages;
-
-            document.getElementById("readCount").innerText =
-                data.read_messages;
-
-            document.getElementById("unreadCount").innerText =
-                data.unread_messages;
-
-            document.getElementById("lastTime").innerText =
-                formatIST(data.last_message_time);
-
-            renderChart(
-                data.read_messages,
-                data.unread_messages
-            );
-
-        } catch {
-
-            console.log("Stats load failed");
-
+        if(msg.is_read){
+            div.classList.add("read");
+        } else {
+            div.style.borderLeft="5px solid red";
         }
 
-    }
-
-
-    function renderChart(read, unread) {
-
-        const ctx = document.getElementById("messageChart");
-
-        if (chart) {
-            chart.destroy();
-        }
-
-        chart = new Chart(ctx, {
-
-            type: "pie",
-
-            data: {
-                labels: ["Read", "Unread"],
-                datasets: [{
-                    data: [read, unread],
-                    backgroundColor: [
-                        "#2ecc71",
-                        "#e74c3c"
-                    ]
-                }]
-            },
-
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: "bottom"
-                    }
-                }
-            }
-
-        });
-
-    }
-
-
-    /* ================= LOAD MESSAGES ================= */
-
-    async function loadMessages() {
-
-        try {
-
-            const res = await fetch(API_URL + "/admin/messages?limit=20", {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            });
-
-            if (res.status === 401) {
-                logout();
-                return;
-            }
-
-            const data = await res.json();
-
-            renderMessages(data.messages || data);
-
-        } catch {
-
-            document.getElementById("messages").innerText =
-                "Server error. Try again later.";
-
-        }
-
-    }
-
-
-    function renderMessages(messages) {
-
-        const box = document.getElementById("messages");
-
-        box.innerHTML = "";
-
-        if (!messages || messages.length === 0) {
-
-            box.innerText = "No messages yet.";
-
-            return;
-        }
-
-        messages.forEach(msg => {
-
-            const div = document.createElement("div");
-
-            div.className = "message-card";
-
-            if (msg.is_read) {
-                div.classList.add("read");
-            }
-
-            div.innerHTML = `
-
-                <p><strong>Name:</strong> ${msg.name}</p>
-
-                <p><strong>Email:</strong> ${msg.email}</p>
-
-                <p><strong>Message:</strong> ${msg.message}</p>
-
-                <p><small>
-                    ${formatIST(msg.created_at)}
-                </small></p>
-
-                <button onclick="toggleRead(${msg.id})">
-                    ${msg.is_read ? "Mark Unread" : "Mark Read"}
-                </button>
-
-                <button onclick="deleteMessage(${msg.id})">
-                    Delete
-                </button>
-
-            `;
-
-            box.appendChild(div);
-
-        });
-
-    }
-
-
-    /* ================= TOGGLE ================= */
-
-    async function toggleRead(id) {
-
-        try {
-
-            const res = await fetch(
-
-                API_URL + `/admin/messages/${id}/toggle-read`,
-
-                {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }
-            );
-
-            if (res.status === 401) {
-                logout();
-                return;
-            }
-
-            loadMessages();
-            loadStats();
-
-        } catch {
-
-            alert("Update failed");
-
-        }
-
-    }
-
-
-    /* ================= DELETE ================= */
-
-    async function deleteMessage(id) {
-
-        if (!confirm("Delete this message?")) return;
-
-        try {
-
-            const res = await fetch(
-
-                API_URL + `/admin/messages/${id}`,
-
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }
-            );
-
-            if (res.status === 401) {
-                logout();
-                return;
-            }
-
-            loadMessages();
-            loadStats();
-
-        } catch {
-
-            alert("Delete failed");
-
-        }
-
-    }
-
-
-    /* ================= AUTO REFRESH ================= */
-
-    setInterval(() => {
-
-        loadStats();
-        loadMessages();
-
-    }, 30000); // every 30 seconds
-
-
-    /* ================= INIT ================= */
-
-    loadStats();
-    loadMessages();
+        div.innerHTML=`
+        <p>${msg.name}</p>
+        <p>${msg.email}</p>
+        <p>${msg.message}</p>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+function searchMessages(){
+    const s=document.getElementById("searchInput").value;
+    loadMessages(1,s);
+}
+
+loadMessages();
 
 </script>
 
