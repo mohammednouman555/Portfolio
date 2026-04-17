@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mohammed Nouman</title>
 
-<link rel="stylesheet" href="style.css">
-
 <style>
 
 /* ===== GLOBAL ===== */
@@ -43,27 +41,33 @@ header{
     justify-content:center;
     align-items:center;
     text-align:center;
+    background:linear-gradient(135deg,#0077b6,#00b4d8);
+    color:white;
 }
 
 header h1{
-    font-size:44px;
+    font-size:48px;
+    margin-bottom:10px;
 }
 
+/* ✅ FIXED TYPING VISIBILITY */
 .typing{
-    color:#0077b6;
+    color:#fff;
     font-weight:bold;
+    font-size:22px;
 }
 
 /* ===== BUTTON ===== */
 .btn{
     display:inline-block;
     padding:10px 18px;
-    background:#0077b6;
-    color:white;
+    background:white;
+    color:#0077b6;
     border-radius:6px;
     text-decoration:none;
     margin-top:10px;
     cursor:pointer;
+    font-weight:bold;
 }
 
 /* ===== SECTION ===== */
@@ -84,6 +88,7 @@ header h1{
     background:white;
     padding:10px 15px;
     border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* ===== PROJECT ===== */
@@ -99,6 +104,7 @@ header h1{
     background:white;
     padding:20px;
     border-radius:10px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* ===== CONTACT ===== */
@@ -114,13 +120,9 @@ header h1{
     margin:10px 0;
 }
 
-/* ===== FLOAT ===== */
-.floating{
-    animation:float 3s infinite;
-}
-
-@keyframes float{
-    50%{transform:translateY(-10px);}
+/* ===== RESPONSE ===== */
+#responseMsg{
+    font-weight:bold;
 }
 
 </style>
@@ -141,19 +143,17 @@ header h1{
 
 <!-- HERO -->
 <header>
-    <h1 class="floating">Mohammed Nouman</h1>
+    <h1>Mohammed Nouman</h1>
     <p>I am a <span class="typing"></span></p>
 
     <a href="#contact" class="btn">Hire Me</a>
-
-    <!-- SAFE Resume Button -->
     <button class="btn" onclick="resumeClick()">Download Resume</button>
 </header>
 
 <!-- ABOUT -->
 <section id="about" class="section">
     <h2>About Me</h2>
-    <p>Computer Science Engineering student focused on backend & real-world projects.</p>
+    <p>Computer Science Engineering student focused on backend and real-world projects.</p>
 </section>
 
 <!-- SKILLS -->
@@ -203,7 +203,7 @@ header h1{
 
 <script>
 
-/* ===== FIXED TYPING ===== */
+/* ===== TYPING EFFECT (WORKING) ===== */
 const roles=["Developer","Python Programmer","Backend Engineer"];
 let i=0,j=0,isDeleting=false;
 
@@ -230,7 +230,7 @@ function type(){
 
 type();
 
-/* ===== CONTACT FIXED ===== */
+/* ===== CONTACT ===== */
 document.getElementById("contactForm").addEventListener("submit",async(e)=>{
     e.preventDefault();
 
@@ -244,12 +244,12 @@ document.getElementById("contactForm").addEventListener("submit",async(e)=>{
         })
     });
 
-    document.getElementById("responseMsg").innerText="Message Sent!";
+    document.getElementById("responseMsg").innerText="✅ Message Sent!";
 });
 
 /* ===== RESUME FIX ===== */
 function resumeClick(){
-    alert("Upload resume.pdf in project folder to enable download.");
+    alert("Add resume.pdf to your project folder to enable download.");
 }
 
 </script>
