@@ -14,12 +14,6 @@ body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
     background:linear-gradient(135deg,#f4f6f9,#e3f2fd);
-    overflow-x:hidden;
-}
-
-h2{
-    font-size:28px;
-    margin-bottom:15px;
 }
 
 /* ===== NAVBAR ===== */
@@ -39,11 +33,6 @@ h2{
     text-decoration:none;
     color:#333;
     font-weight:500;
-    transition:0.3s;
-}
-
-.nav-links a:hover{
-    color:#0077b6;
 }
 
 /* ===== HERO ===== */
@@ -58,77 +47,11 @@ header{
 
 header h1{
     font-size:44px;
-    margin-bottom:10px;
 }
 
 .typing{
     color:#0077b6;
     font-weight:bold;
-}
-
-/* ===== HERO BUTTONS ===== */
-.hero-buttons{
-    margin-top:20px;
-}
-
-.hero-buttons a{
-    margin:5px;
-}
-
-/* ===== SECTION ===== */
-.section{
-    padding:80px 20px;
-    text-align:center;
-    opacity:0;
-    transform:translateY(30px);
-    transition:0.6s;
-}
-
-.section.show{
-    opacity:1;
-    transform:translateY(0);
-}
-
-/* ===== SKILLS ===== */
-.skills-container{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:15px;
-}
-
-.skill{
-    padding:10px 15px;
-    background:white;
-    border-radius:8px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    transition:0.3s;
-}
-
-.skill:hover{
-    transform:translateY(-5px);
-}
-
-/* ===== PROJECTS ===== */
-.projects-container{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:20px;
-}
-
-.project-card{
-    width:280px;
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    transition:0.3s;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-
-.project-card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 12px 25px rgba(0,0,0,0.2);
 }
 
 /* ===== BUTTON ===== */
@@ -140,11 +63,42 @@ header h1{
     border-radius:6px;
     text-decoration:none;
     margin-top:10px;
-    transition:0.3s;
+    cursor:pointer;
 }
 
-.btn:hover{
-    transform:scale(1.05);
+/* ===== SECTION ===== */
+.section{
+    padding:80px 20px;
+    text-align:center;
+}
+
+/* ===== SKILLS ===== */
+.skills-container{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.skill{
+    background:white;
+    padding:10px 15px;
+    border-radius:6px;
+}
+
+/* ===== PROJECT ===== */
+.projects-container{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.project-card{
+    width:260px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
 }
 
 /* ===== CONTACT ===== */
@@ -156,24 +110,17 @@ header h1{
 .contact-form input,
 .contact-form textarea{
     width:100%;
-    padding:12px;
+    padding:10px;
     margin:10px 0;
-    border-radius:6px;
-    border:1px solid #ccc;
 }
 
-#responseMsg{
-    font-weight:bold;
-}
-
-/* ===== FLOATING ===== */
+/* ===== FLOAT ===== */
 .floating{
-    animation:float 3s ease-in-out infinite;
+    animation:float 3s infinite;
 }
 
 @keyframes float{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-10px)}
+    50%{transform:translateY(-10px);}
 }
 
 </style>
@@ -197,19 +144,16 @@ header h1{
     <h1 class="floating">Mohammed Nouman</h1>
     <p>I am a <span class="typing"></span></p>
 
-    <div class="hero-buttons">
-        <a href="#contact" class="btn">Hire Me</a>
-        <a href="resume.pdf" class="btn" target="_blank">Download Resume</a>
-    </div>
+    <a href="#contact" class="btn">Hire Me</a>
+
+    <!-- SAFE Resume Button -->
+    <button class="btn" onclick="resumeClick()">Download Resume</button>
 </header>
 
 <!-- ABOUT -->
 <section id="about" class="section">
     <h2>About Me</h2>
-    <p>
-        I am a Computer Science Engineering student focused on building scalable backend systems,
-        automation tools, and full-stack applications.
-    </p>
+    <p>Computer Science Engineering student focused on backend & real-world projects.</p>
 </section>
 
 <!-- SKILLS -->
@@ -223,7 +167,6 @@ header h1{
         <div class="skill">HTML</div>
         <div class="skill">CSS</div>
         <div class="skill">JavaScript</div>
-        <div class="skill">Git</div>
     </div>
 </section>
 
@@ -232,31 +175,27 @@ header h1{
     <h2>Projects</h2>
 
     <div class="projects-container">
-
         <div class="project-card">
             <h3>File Organizer</h3>
-            <p>Automates file sorting using Python.</p>
-            <a href="https://github.com/mohammednouman555" class="btn" target="_blank">View</a>
+            <p>Python automation project.</p>
         </div>
 
         <div class="project-card">
-            <h3>Portfolio Website</h3>
-            <p>Full stack portfolio with admin dashboard.</p>
-            <a href="#" class="btn">Live</a>
+            <h3>Portfolio</h3>
+            <p>Full stack website.</p>
         </div>
-
     </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact" class="section">
-    <h2>Contact Me</h2>
+    <h2>Contact</h2>
 
     <form id="contactForm" class="contact-form">
-        <input type="text" id="name" placeholder="Name" required>
-        <input type="email" id="email" placeholder="Email" required>
+        <input id="name" placeholder="Name" required>
+        <input id="email" placeholder="Email" required>
         <textarea id="message" placeholder="Message"></textarea>
-        <button class="btn" id="sendBtn">Send</button>
+        <button class="btn">Send</button>
     </form>
 
     <p id="responseMsg"></p>
@@ -264,29 +203,18 @@ header h1{
 
 <script>
 
-/* ===== SCROLL ANIMATION ===== */
-const sections=document.querySelectorAll(".section");
-
-window.addEventListener("scroll",()=>{
-    sections.forEach(sec=>{
-        if(sec.getBoundingClientRect().top < window.innerHeight-100){
-            sec.classList.add("show");
-        }
-    });
-});
-
-/* ===== TYPING ===== */
+/* ===== FIXED TYPING ===== */
 const roles=["Developer","Python Programmer","Backend Engineer"];
-let i=0,j=0,current="",isDeleting=false;
+let i=0,j=0,isDeleting=false;
 
 function type(){
-    current=roles[i];
+    let text=roles[i];
 
-    j=isDeleting?j-1:j+1;
+    j = isDeleting ? j-1 : j+1;
 
-    document.querySelector(".typing").innerText=current.substring(0,j);
+    document.querySelector(".typing").innerText=text.substring(0,j);
 
-    if(!isDeleting && j===current.length){
+    if(!isDeleting && j===text.length){
         isDeleting=true;
         setTimeout(type,1000);
         return;
@@ -302,35 +230,27 @@ function type(){
 
 type();
 
-/* ===== CONTACT ===== */
+/* ===== CONTACT FIXED ===== */
 document.getElementById("contactForm").addEventListener("submit",async(e)=>{
     e.preventDefault();
 
-    const btn=document.getElementById("sendBtn");
-    btn.innerText="Sending...";
-    btn.disabled=true;
+    await fetch("https://portfolio-backend-rgbj.onrender.com/contact",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            name:document.getElementById("name").value,
+            email:document.getElementById("email").value,
+            message:document.getElementById("message").value
+        })
+    });
 
-    try{
-        await fetch("https://portfolio-backend-rgbj.onrender.com/contact",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                name:name.value,
-                email:email.value,
-                message:message.value
-            })
-        });
-
-        document.getElementById("responseMsg").innerText="✅ Message sent successfully!";
-        btn.innerText="Send";
-        btn.disabled=false;
-
-    }catch{
-        document.getElementById("responseMsg").innerText="❌ Failed. Try again.";
-        btn.innerText="Send";
-        btn.disabled=false;
-    }
+    document.getElementById("responseMsg").innerText="Message Sent!";
 });
+
+/* ===== RESUME FIX ===== */
+function resumeClick(){
+    alert("Upload resume.pdf in project folder to enable download.");
+}
 
 </script>
 
