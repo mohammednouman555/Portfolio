@@ -10,16 +10,21 @@
 <style>
 
 /* ===== GLOBAL ===== */
-body {
+body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#f4f6f9,#e3f2fd);
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#f4f6f9,#e3f2fd);
     overflow-x:hidden;
 }
 
+h2{
+    font-size:28px;
+    margin-bottom:15px;
+}
+
 /* ===== NAVBAR ===== */
-.navbar {
-    position: fixed;
+.navbar{
+    position:fixed;
     width:100%;
     background:white;
     display:flex;
@@ -29,19 +34,20 @@ body {
     z-index:1000;
 }
 
-.nav-links a {
+.nav-links a{
     margin:0 10px;
     text-decoration:none;
     color:#333;
     font-weight:500;
+    transition:0.3s;
 }
 
-.nav-links a:hover {
+.nav-links a:hover{
     color:#0077b6;
 }
 
 /* ===== HERO ===== */
-header {
+header{
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -50,17 +56,27 @@ header {
     text-align:center;
 }
 
-header h1 {
-    font-size:42px;
+header h1{
+    font-size:44px;
+    margin-bottom:10px;
 }
 
-.typing {
+.typing{
     color:#0077b6;
     font-weight:bold;
 }
 
+/* ===== HERO BUTTONS ===== */
+.hero-buttons{
+    margin-top:20px;
+}
+
+.hero-buttons a{
+    margin:5px;
+}
+
 /* ===== SECTION ===== */
-.section {
+.section{
     padding:80px 20px;
     text-align:center;
     opacity:0;
@@ -68,20 +84,40 @@ header h1 {
     transition:0.6s;
 }
 
-.section.show {
+.section.show{
     opacity:1;
     transform:translateY(0);
 }
 
-/* ===== CARDS ===== */
-.projects-container {
+/* ===== SKILLS ===== */
+.skills-container{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.skill{
+    padding:10px 15px;
+    background:white;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.skill:hover{
+    transform:translateY(-5px);
+}
+
+/* ===== PROJECTS ===== */
+.projects-container{
     display:flex;
     justify-content:center;
     flex-wrap:wrap;
     gap:20px;
 }
 
-.project-card {
+.project-card{
     width:280px;
     background:white;
     padding:20px;
@@ -90,13 +126,13 @@ header h1 {
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
 
-.project-card:hover {
+.project-card:hover{
     transform:translateY(-8px);
     box-shadow:0 12px 25px rgba(0,0,0,0.2);
 }
 
 /* ===== BUTTON ===== */
-.btn {
+.btn{
     display:inline-block;
     padding:10px 18px;
     background:#0077b6;
@@ -107,18 +143,18 @@ header h1 {
     transition:0.3s;
 }
 
-.btn:hover {
+.btn:hover{
     transform:scale(1.05);
 }
 
 /* ===== CONTACT ===== */
-.contact-form {
+.contact-form{
     max-width:400px;
     margin:auto;
 }
 
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea{
     width:100%;
     padding:12px;
     margin:10px 0;
@@ -126,12 +162,16 @@ header h1 {
     border:1px solid #ccc;
 }
 
-/* ===== FLOATING ANIMATION ===== */
-.floating {
-    animation: float 3s ease-in-out infinite;
+#responseMsg{
+    font-weight:bold;
 }
 
-@keyframes float {
+/* ===== FLOATING ===== */
+.floating{
+    animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
     0%,100%{transform:translateY(0)}
     50%{transform:translateY(-10px)}
 }
@@ -156,18 +196,35 @@ header h1 {
 <header>
     <h1 class="floating">Mohammed Nouman</h1>
     <p>I am a <span class="typing"></span></p>
+
+    <div class="hero-buttons">
+        <a href="#contact" class="btn">Hire Me</a>
+        <a href="resume.pdf" class="btn" target="_blank">Download Resume</a>
+    </div>
 </header>
 
 <!-- ABOUT -->
 <section id="about" class="section">
     <h2>About Me</h2>
-    <p>Computer Science Engineering student passionate about building real-world projects and backend systems.</p>
+    <p>
+        I am a Computer Science Engineering student focused on building scalable backend systems,
+        automation tools, and full-stack applications.
+    </p>
 </section>
 
 <!-- SKILLS -->
 <section id="skills" class="section">
     <h2>Skills</h2>
-    <p>Python • Java • C • Web Development • Git</p>
+
+    <div class="skills-container">
+        <div class="skill">Python</div>
+        <div class="skill">Java</div>
+        <div class="skill">C</div>
+        <div class="skill">HTML</div>
+        <div class="skill">CSS</div>
+        <div class="skill">JavaScript</div>
+        <div class="skill">Git</div>
+    </div>
 </section>
 
 <!-- PROJECTS -->
@@ -179,7 +236,7 @@ header h1 {
         <div class="project-card">
             <h3>File Organizer</h3>
             <p>Automates file sorting using Python.</p>
-            <a href="#" class="btn">View</a>
+            <a href="https://github.com/mohammednouman555" class="btn" target="_blank">View</a>
         </div>
 
         <div class="project-card">
@@ -199,7 +256,7 @@ header h1 {
         <input type="text" id="name" placeholder="Name" required>
         <input type="email" id="email" placeholder="Email" required>
         <textarea id="message" placeholder="Message"></textarea>
-        <button class="btn">Send</button>
+        <button class="btn" id="sendBtn">Send</button>
     </form>
 
     <p id="responseMsg"></p>
@@ -218,18 +275,14 @@ window.addEventListener("scroll",()=>{
     });
 });
 
-/* ===== TYPING EFFECT ===== */
+/* ===== TYPING ===== */
 const roles=["Developer","Python Programmer","Backend Engineer"];
 let i=0,j=0,current="",isDeleting=false;
 
 function type(){
     current=roles[i];
 
-    if(isDeleting){
-        j--;
-    }else{
-        j++;
-    }
+    j=isDeleting?j-1:j+1;
 
     document.querySelector(".typing").innerText=current.substring(0,j);
 
@@ -249,21 +302,34 @@ function type(){
 
 type();
 
-/* ===== CONTACT FORM ===== */
+/* ===== CONTACT ===== */
 document.getElementById("contactForm").addEventListener("submit",async(e)=>{
     e.preventDefault();
 
-    const res=await fetch("https://portfolio-backend-rgbj.onrender.com/contact",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            name:document.getElementById("name").value,
-            email:document.getElementById("email").value,
-            message:document.getElementById("message").value
-        })
-    });
+    const btn=document.getElementById("sendBtn");
+    btn.innerText="Sending...";
+    btn.disabled=true;
 
-    document.getElementById("responseMsg").innerText="Message Sent!";
+    try{
+        await fetch("https://portfolio-backend-rgbj.onrender.com/contact",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                name:name.value,
+                email:email.value,
+                message:message.value
+            })
+        });
+
+        document.getElementById("responseMsg").innerText="✅ Message sent successfully!";
+        btn.innerText="Send";
+        btn.disabled=false;
+
+    }catch{
+        document.getElementById("responseMsg").innerText="❌ Failed. Try again.";
+        btn.innerText="Send";
+        btn.disabled=false;
+    }
 });
 
 </script>
