@@ -26,13 +26,6 @@ body{
     z-index:1000;
 }
 
-.nav-links a{
-    margin:0 10px;
-    text-decoration:none;
-    color:#333;
-    font-weight:500;
-}
-
 /* ===== HERO ===== */
 header{
     height:100vh;
@@ -45,21 +38,13 @@ header{
     color:white;
 }
 
-header h1{
-    font-size:48px;
-    margin-bottom:10px;
-}
-
-/* ✅ FIXED TYPING VISIBILITY */
 .typing{
-    color:#fff;
-    font-weight:bold;
     font-size:22px;
+    font-weight:bold;
 }
 
 /* ===== BUTTON ===== */
 .btn{
-    display:inline-block;
     padding:10px 18px;
     background:white;
     color:#0077b6;
@@ -67,7 +52,6 @@ header h1{
     text-decoration:none;
     margin-top:10px;
     cursor:pointer;
-    font-weight:bold;
 }
 
 /* ===== SECTION ===== */
@@ -76,54 +60,66 @@ header h1{
     text-align:center;
 }
 
-/* ===== SKILLS ===== */
-.skills-container{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:10px;
+/* ===== CHATBOT ===== */
+.chat-btn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#0077b6;
+    color:white;
+    padding:15px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:18px;
 }
 
-.skill{
+.chatbox{
+    position:fixed;
+    bottom:80px;
+    right:20px;
+    width:300px;
     background:white;
-    padding:10px 15px;
-    border-radius:6px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* ===== PROJECT ===== */
-.projects-container{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    flex-wrap:wrap;
-}
-
-.project-card{
-    width:260px;
-    background:white;
-    padding:20px;
     border-radius:10px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+    display:none;
+    flex-direction:column;
 }
 
-/* ===== CONTACT ===== */
-.contact-form{
-    max-width:400px;
-    margin:auto;
-}
-
-.contact-form input,
-.contact-form textarea{
-    width:100%;
+.chat-header{
+    background:#0077b6;
+    color:white;
     padding:10px;
-    margin:10px 0;
 }
 
-/* ===== RESPONSE ===== */
-#responseMsg{
-    font-weight:bold;
+.chat-body{
+    padding:10px;
+    height:250px;
+    overflow-y:auto;
 }
+
+.chat-input{
+    display:flex;
+}
+
+.chat-input input{
+    flex:1;
+    padding:10px;
+    border:none;
+}
+
+.chat-input button{
+    background:#0077b6;
+    color:white;
+    border:none;
+    padding:10px;
+}
+
+.message{
+    margin:5px 0;
+}
+
+.user{ text-align:right; }
+.bot{ text-align:left; color:#0077b6; }
 
 </style>
 </head>
@@ -133,12 +129,6 @@ header h1{
 <!-- NAVBAR -->
 <div class="navbar">
     <h3>Nouman</h3>
-    <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
-    </div>
 </div>
 
 <!-- HERO -->
@@ -147,70 +137,51 @@ header h1{
     <p>I am a <span class="typing"></span></p>
 
     <a href="#contact" class="btn">Hire Me</a>
-    <button class="btn" onclick="resumeClick()">Download Resume</button>
 </header>
 
 <!-- ABOUT -->
-<section id="about" class="section">
+<section class="section">
     <h2>About Me</h2>
     <p>Computer Science Engineering student focused on backend and real-world projects.</p>
-</section>
-
-<!-- SKILLS -->
-<section id="skills" class="section">
-    <h2>Skills</h2>
-
-    <div class="skills-container">
-        <div class="skill">Python</div>
-        <div class="skill">Java</div>
-        <div class="skill">C</div>
-        <div class="skill">HTML</div>
-        <div class="skill">CSS</div>
-        <div class="skill">JavaScript</div>
-    </div>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects" class="section">
-    <h2>Projects</h2>
-
-    <div class="projects-container">
-        <div class="project-card">
-            <h3>File Organizer</h3>
-            <p>Python automation project.</p>
-        </div>
-
-        <div class="project-card">
-            <h3>Portfolio</h3>
-            <p>Full stack website.</p>
-        </div>
-    </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact" class="section">
     <h2>Contact</h2>
 
-    <form id="contactForm" class="contact-form">
-        <input id="name" placeholder="Name" required>
-        <input id="email" placeholder="Email" required>
-        <textarea id="message" placeholder="Message"></textarea>
+    <form id="contactForm">
+        <input id="name" placeholder="Name" required><br>
+        <input id="email" placeholder="Email" required><br>
+        <textarea id="message" placeholder="Message"></textarea><br>
         <button class="btn">Send</button>
     </form>
 
     <p id="responseMsg"></p>
 </section>
 
+<!-- CHAT BUTTON -->
+<div class="chat-btn" onclick="toggleChat()">💬</div>
+
+<!-- CHATBOX -->
+<div class="chatbox" id="chatbox">
+    <div class="chat-header">Nouman AI</div>
+    <div class="chat-body" id="chatBody"></div>
+
+    <div class="chat-input">
+        <input id="chatInput" placeholder="Ask me...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
 <script>
 
-/* ===== TYPING EFFECT (WORKING) ===== */
+/* ===== TYPING ===== */
 const roles=["Developer","Python Programmer","Backend Engineer"];
 let i=0,j=0,isDeleting=false;
 
 function type(){
     let text=roles[i];
-
-    j = isDeleting ? j-1 : j+1;
+    j=isDeleting?j-1:j+1;
 
     document.querySelector(".typing").innerText=text.substring(0,j);
 
@@ -227,7 +198,6 @@ function type(){
 
     setTimeout(type,100);
 }
-
 type();
 
 /* ===== CONTACT ===== */
@@ -238,18 +208,56 @@ document.getElementById("contactForm").addEventListener("submit",async(e)=>{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-            name:document.getElementById("name").value,
-            email:document.getElementById("email").value,
-            message:document.getElementById("message").value
+            name:name.value,
+            email:email.value,
+            message:message.value
         })
     });
 
-    document.getElementById("responseMsg").innerText="✅ Message Sent!";
+    responseMsg.innerText="Message Sent!";
 });
 
-/* ===== RESUME FIX ===== */
-function resumeClick(){
-    alert("Add resume.pdf to your project folder to enable download.");
+/* ===== CHAT ===== */
+function toggleChat(){
+    const box=document.getElementById("chatbox");
+    box.style.display = box.style.display==="flex" ? "none" : "flex";
+}
+
+/* ===== AI RESPONSES ===== */
+function botReply(text){
+    text=text.toLowerCase();
+
+    if(text.includes("skills"))
+        return "I know Python, Java, C, Web Development.";
+
+    if(text.includes("project"))
+        return "I built a portfolio system and automation tools.";
+
+    if(text.includes("contact"))
+        return "You can contact me using the contact form below.";
+
+    return "I am Nouman's AI assistant. Ask about skills, projects, or contact.";
+}
+
+/* ===== SEND ===== */
+function sendMessage(){
+
+    const input=document.getElementById("chatInput");
+    const body=document.getElementById("chatBody");
+
+    const userText=input.value;
+    if(!userText) return;
+
+    body.innerHTML += `<div class="message user">${userText}</div>`;
+
+    const reply=botReply(userText);
+
+    setTimeout(()=>{
+        body.innerHTML += `<div class="message bot">${reply}</div>`;
+        body.scrollTop = body.scrollHeight;
+    },500);
+
+    input.value="";
 }
 
 </script>
