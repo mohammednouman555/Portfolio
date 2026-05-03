@@ -11,19 +11,45 @@
 body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#f4f6f9,#e3f2fd);
+    overflow-x:hidden;
+    background:#0f172a;
+    color:white;
+}
+
+/* ===== PARTICLES CANVAS ===== */
+#particles{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:-1;
+}
+
+/* ===== GLASS EFFECT ===== */
+.glass{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
 }
 
 /* ===== NAVBAR ===== */
 .navbar{
     position:fixed;
-    width:100%;
-    background:white;
+    width:90%;
+    left:5%;
+    top:15px;
+    padding:15px 30px;
     display:flex;
     justify-content:space-between;
-    padding:15px 40px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.1);
     z-index:1000;
+}
+
+.nav-links a{
+    color:white;
+    margin:0 10px;
+    text-decoration:none;
 }
 
 /* ===== HERO ===== */
@@ -34,30 +60,29 @@ header{
     justify-content:center;
     align-items:center;
     text-align:center;
-    background:linear-gradient(135deg,#0077b6,#00b4d8);
-    color:white;
 }
 
 .typing{
     font-size:22px;
     font-weight:bold;
+    color:#38bdf8;
 }
 
 /* ===== BUTTON ===== */
 .btn{
     padding:10px 18px;
-    background:white;
-    color:#0077b6;
-    border-radius:6px;
+    margin:10px;
+    border-radius:8px;
+    background:#38bdf8;
+    color:black;
     text-decoration:none;
-    margin-top:10px;
-    cursor:pointer;
 }
 
 /* ===== SECTION ===== */
 .section{
-    padding:80px 20px;
-    text-align:center;
+    margin:40px auto;
+    width:85%;
+    padding:30px;
 }
 
 /* ===== CHATBOT ===== */
@@ -65,12 +90,11 @@ header{
     position:fixed;
     bottom:20px;
     right:20px;
-    background:#0077b6;
-    color:white;
+    background:#38bdf8;
+    color:black;
     padding:15px;
     border-radius:50%;
     cursor:pointer;
-    font-size:18px;
 }
 
 .chatbox{
@@ -78,23 +102,14 @@ header{
     bottom:80px;
     right:20px;
     width:300px;
-    background:white;
-    border-radius:10px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.2);
     display:none;
     flex-direction:column;
 }
 
-.chat-header{
-    background:#0077b6;
-    color:white;
-    padding:10px;
-}
-
 .chat-body{
-    padding:10px;
-    height:250px;
+    height:200px;
     overflow-y:auto;
+    padding:10px;
 }
 
 .chat-input{
@@ -103,32 +118,29 @@ header{
 
 .chat-input input{
     flex:1;
-    padding:10px;
-    border:none;
+    padding:8px;
 }
 
 .chat-input button{
-    background:#0077b6;
-    color:white;
+    padding:8px;
+    background:#38bdf8;
     border:none;
-    padding:10px;
 }
-
-.message{
-    margin:5px 0;
-}
-
-.user{ text-align:right; }
-.bot{ text-align:left; color:#0077b6; }
 
 </style>
 </head>
 
 <body>
 
+<canvas id="particles"></canvas>
+
 <!-- NAVBAR -->
-<div class="navbar">
+<div class="navbar glass">
     <h3>Nouman</h3>
+    <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
 </div>
 
 <!-- HERO -->
@@ -140,60 +152,90 @@ header{
 </header>
 
 <!-- ABOUT -->
-<section class="section">
+<div id="about" class="section glass">
     <h2>About Me</h2>
-    <p>Computer Science Engineering student focused on backend and real-world projects.</p>
-</section>
+    <p>I build backend systems, automation tools, and full stack projects.</p>
+</div>
 
 <!-- CONTACT -->
-<section id="contact" class="section">
+<div id="contact" class="section glass">
     <h2>Contact</h2>
 
     <form id="contactForm">
-        <input id="name" placeholder="Name" required><br>
-        <input id="email" placeholder="Email" required><br>
-        <textarea id="message" placeholder="Message"></textarea><br>
+        <input id="name" placeholder="Name" required><br><br>
+        <input id="email" placeholder="Email" required><br><br>
+        <textarea id="message" placeholder="Message"></textarea><br><br>
         <button class="btn">Send</button>
     </form>
 
     <p id="responseMsg"></p>
-</section>
+</div>
 
-<!-- CHAT BUTTON -->
+<!-- CHAT -->
 <div class="chat-btn" onclick="toggleChat()">💬</div>
 
-<!-- CHATBOX -->
-<div class="chatbox" id="chatbox">
-    <div class="chat-header">Nouman AI</div>
+<div class="chatbox glass" id="chatbox">
     <div class="chat-body" id="chatBody"></div>
 
     <div class="chat-input">
-        <input id="chatInput" placeholder="Ask me...">
+        <input id="chatInput">
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
 
 <script>
 
+/* ===== PARTICLES ===== */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+for(let i=0;i<80;i++){
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*2,
+        dx:Math.random()-0.5,
+        dy:Math.random()-0.5
+    });
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle="#38bdf8";
+        ctx.fill();
+
+        p.x+=p.dx;
+        p.y+=p.dy;
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
 /* ===== TYPING ===== */
-const roles=["Developer","Python Programmer","Backend Engineer"];
-let i=0,j=0,isDeleting=false;
+const roles=["Developer","Backend Engineer","Python Programmer"];
+let i=0,j=0,del=false;
 
 function type(){
-    let text=roles[i];
-    j=isDeleting?j-1:j+1;
+    let t=roles[i];
+    j=del?j-1:j+1;
 
-    document.querySelector(".typing").innerText=text.substring(0,j);
+    document.querySelector(".typing").innerText=t.substring(0,j);
 
-    if(!isDeleting && j===text.length){
-        isDeleting=true;
-        setTimeout(type,1000);
-        return;
+    if(!del && j===t.length){
+        del=true; setTimeout(type,1000); return;
     }
-
-    if(isDeleting && j===0){
-        isDeleting=false;
-        i=(i+1)%roles.length;
+    if(del && j===0){
+        del=false; i=(i+1)%roles.length;
     }
 
     setTimeout(type,100);
@@ -219,45 +261,20 @@ document.getElementById("contactForm").addEventListener("submit",async(e)=>{
 
 /* ===== CHAT ===== */
 function toggleChat(){
-    const box=document.getElementById("chatbox");
-    box.style.display = box.style.display==="flex" ? "none" : "flex";
+    let c=document.getElementById("chatbox");
+    c.style.display=c.style.display==="flex"?"none":"flex";
 }
 
-/* ===== AI RESPONSES ===== */
-function botReply(text){
-    text=text.toLowerCase();
-
-    if(text.includes("skills"))
-        return "I know Python, Java, C, Web Development.";
-
-    if(text.includes("project"))
-        return "I built a portfolio system and automation tools.";
-
-    if(text.includes("contact"))
-        return "You can contact me using the contact form below.";
-
-    return "I am Nouman's AI assistant. Ask about skills, projects, or contact.";
-}
-
-/* ===== SEND ===== */
 function sendMessage(){
+    let input=chatInput.value;
+    if(!input) return;
 
-    const input=document.getElementById("chatInput");
-    const body=document.getElementById("chatBody");
-
-    const userText=input.value;
-    if(!userText) return;
-
-    body.innerHTML += `<div class="message user">${userText}</div>`;
-
-    const reply=botReply(userText);
-
+    chatBody.innerHTML+=`<div>${input}</div>`;
     setTimeout(()=>{
-        body.innerHTML += `<div class="message bot">${reply}</div>`;
-        body.scrollTop = body.scrollHeight;
+        chatBody.innerHTML+=`<div style="color:#38bdf8">Ask about skills/projects!</div>`;
     },500);
 
-    input.value="";
+    chatInput.value="";
 }
 
 </script>
